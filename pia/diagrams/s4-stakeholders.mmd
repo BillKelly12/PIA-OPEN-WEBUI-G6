@@ -1,0 +1,27 @@
+---
+config:
+  layout: elk
+---
+flowchart TB
+  subgraph G1["Decide and run"]
+    U["University / lab (controller)"]
+    A["Supervisor or IT contact (admin), often also the students' supervisor"]
+  end
+  subgraph G2["Use the tool"]
+    S["PhD students and researchers"]
+    C["Colleague with share access"]
+  end
+  subgraph G3["In the documents, no account, may not know"]
+    I["Interviewees, survey respondents"]
+    CA["Co-authors, people named in drafts"]
+  end
+  subgraph G4["Outside the lab"]
+    M["Open WebUI maintainers, plugin authors"]
+  end
+  U -->|"appoints, sets rules"| A
+  A -->|"can read all chats and files by default"| S
+  S -->|"share a frozen copy"| C
+  I -.->|"their words are uploaded"| S
+  CA -.->|"their text is uploaded"| S
+  M -->|"software and updates"| A
+  linkStyle 1 stroke:#d00,stroke-width:3px

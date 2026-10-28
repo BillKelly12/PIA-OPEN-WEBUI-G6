@@ -1,0 +1,48 @@
+flowchart LR
+  subgraph TB1["Trust zone 1: users' own devices (outside lab IT control)"]
+    direction TB
+    U1["Researcher's browser"]
+    U2["Colleague's browser"]
+    U3["Admin's browser"]
+  end
+
+  subgraph TB2["Trust zone 2: the lab server (lab controls this)"]
+    direction TB
+    APP["Application server<br/>serves the web pages and the API<br/>(one program)"]
+    AUTH["Sign-in and roles"]
+    SHARE["Share links"]
+    SEARCH["Document search<br/>(chunk, embed, look up)"]
+    OLL["Ollama<br/>local model service"]
+    DB[("Database<br/>accounts, chats, notes,<br/>extracted text, settings")]
+    UP[("Uploads folder<br/>original files")]
+    VEC[("Vector store (Chroma)<br/>text passages + number codes")]
+    LOG[("Server log")]
+  end
+
+  subgraph TB3["Trust zone 3: the internet (outside lab control)"]
+    OAI["api.openai.com<br/>(enabled by default)"]
+    GH["api.github.com<br/>(version check)"]
+    OWU["openwebui.com<br/>(only if a user clicks 'share to community')"]
+  end
+
+  U1 --> APP
+  U2 --> APP
+  U3 --> APP
+  APP --> AUTH
+  APP --> SHARE
+  APP --> SEARCH
+  APP --> OLL
+  AUTH --> DB
+  SHARE --> DB
+  APP --> DB
+  APP --> UP
+  SEARCH --> VEC
+  SEARCH --> OLL
+  APP --> LOG
+  APP --> OAI
+  APP --> GH
+  U1 -. "browser sends the full chat directly" .-> OWU
+
+  style TB1 fill:none,stroke:#d00,stroke-width:2px,stroke-dasharray:6 4
+  style TB2 fill:none,stroke:#d00,stroke-width:2px,stroke-dasharray:6 4
+  style TB3 fill:none,stroke:#d00,stroke-width:2px,stroke-dasharray:6 4

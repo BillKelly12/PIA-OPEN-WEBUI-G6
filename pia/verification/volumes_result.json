@@ -1,0 +1,37 @@
+{
+ "baseline": {
+  "db_live": 770048,
+  "uploads": 153,
+  "vector_dir": 259308,
+  "vector_chunks": 3
+ },
+ "after_docs": {
+  "db_live": 2015232,
+  "uploads": 1229873,
+  "vector_dir": 17708476,
+  "vector_chunks": 1383
+ },
+ "after_chats": {
+  "db_live": 2899968,
+  "uploads": 1229873,
+  "vector_dir": 17708476,
+  "vector_chunks": 1383
+ },
+ "result": {
+  "params": {
+   "n_docs": 20,
+   "doc_kb": 60,
+   "n_chats": 10,
+   "turns_per_chat": 4,
+   "turns_total": 40
+  },
+  "per_doc_bytes": {
+   "db_live": 62259.2,
+   "uploads": 61486.0,
+   "vector_dir": 872458.4
+  },
+  "chunks_per_doc": 69.0,
+  "per_turn_bytes_db": 22118.4,
+  "per_turn_bytes_vector": 0.0
+ }
+}

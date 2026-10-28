@@ -1,0 +1,89 @@
+---
+config:
+  layout: elk
+---
+flowchart LR
+  subgraph TB1["TB1 · Users' devices (not controlled by lab IT)"]
+    E1["E1 Researcher / PhD student"]
+    E2["E2 Colleague with share access"]
+    E3["E3 Lab admin"]
+    P9("P9 Browser-side calls<br/>(frontend code)")
+  end
+
+  subgraph TB2["TB2 · Lab server (controlled by the lab)"]
+    P1("P1 Sign-in and accounts")
+    P2("P2 Chat handling")
+    P3("P3 Document intake and indexing")
+    P4("P4 Document search (RAG)")
+    P5("P5 Share links")
+    P6("P6 Admin functions")
+    P7("P7 Local model service<br/>(Ollama)")
+    P8("P8 Server-side outbound calls")
+    DS1[("DS1 Database<br/>webui.db")]
+    DS2[("DS2 Uploads folder")]
+    DS3[("DS3 Vector store")]
+    DS4[("DS4 Server log")]
+  end
+
+  subgraph TB3["TB3 · Internet services (not controlled by the lab)"]
+    E4["E4 api.openai.com"]
+    E5["E5 api.github.com"]
+    E6["E6 openwebui.com"]
+    E7["E7 Google favicon service"]
+  end
+
+  %% sign-in
+  E1 -->|"F1 A01 credentials"| P1
+  P1 -->|"F2 A09 session token"| E1
+  P1 <-->|"F3 A01 account records"| DS1
+  P1 -->|"F4 A08 login e-mail"| DS4
+
+  %% chat
+  E1 -->|"F5 A02 messages, delete requests"| P2
+  P2 -->|"F6 A02 answers"| E1
+  P2 <-->|"F7 A02 chat, title, tags"| DS1
+  P2 -->|"F8 A02 history + A05 passages"| P7
+  P7 -->|"F9 generated text"| P2
+  P2 -->|"F10 query text"| P4
+  P4 -->|"F11 A05 passages"| P2
+
+  %% upload
+  E1 -->|"F12 A03 file, delete requests"| P3
+  P3 -->|"F13 A03 original file"| DS2
+  P3 -->|"F14 A04 extracted text"| DS1
+  P3 -->|"F15 A05 chunk text"| P7
+  P7 -->|"F16 vectors"| P3
+  P3 -->|"F17 A05 chunks + vectors + metadata"| DS3
+
+  %% retrieval
+  DS3 -->|"F18 A05 chunks"| P4
+  P4 -->|"F19 query text"| P7
+  P7 -->|"F20 query vector"| P4
+  P4 -->|"F21 A08 file name, user id"| DS4
+
+  %% sharing
+  E1 -->|"F22 share / unshare request"| P5
+  P5 <-->|"F23 A06 snapshot, A07 grants"| DS1
+  P5 -->|"F24 A06 shared chat view"| E2
+  E2 -->|"F25 A07 link + token"| P5
+
+  %% admin
+  E3 -->|"F26 admin requests"| P6
+  P6 -->|"F27 A10 chats, files, users, stats, DB copy"| E3
+  P6 <-->|"F28 all stored records"| DS1
+  DS2 -->|"F29 A03 original files"| P6
+
+  %% outbound
+  DS1 -->|"F30 connection settings"| P8
+  P8 -->|"F31 model-list request"| E4
+  E4 -->|"F32 model list"| P8
+  P8 -->|"F33 version check"| E5
+  E5 -->|"F34 release info"| P8
+  P8 -->|"F35 model list, version"| P2
+  E1 -->|"F36 click: share to community"| P9
+  P9 -->|"F37 A02 full chat JSON"| E6
+  P9 -->|"F38 source domain"| E7
+
+  style TB1 fill:none,stroke:#d00,stroke-width:2px,stroke-dasharray:6 4
+  style TB2 fill:none,stroke:#d00,stroke-width:2px,stroke-dasharray:6 4
+  style TB3 fill:none,stroke:#d00,stroke-width:2px,stroke-dasharray:6 4

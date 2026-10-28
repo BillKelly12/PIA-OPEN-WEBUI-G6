@@ -1,0 +1,30 @@
+---
+config:
+  layout: elk
+---
+flowchart LR
+  subgraph TB1["TB1 · Users' devices"]
+    E1["E1 Chat owner"]
+    E2["E2 Colleague with grant"]
+    E3["E3 Admin"]
+  end
+  subgraph TB2["TB2 · Lab server"]
+    P5("P5 Share links")
+    P6("P6 Admin functions")
+    DS1[("DS1 Database")]
+    DS2[("DS2 Uploads folder")]
+  end
+  N["Default log: no record of what the admin read"]:::note
+  E1 -->|"1 shares a chat with a colleague"| P5
+  P5 <-->|"2 frozen copy of the chat + access list"| DS1
+  E2 -->|"3 opens the link, logs in"| P5
+  P5 -->|"4 copy with document passages, not the file"| E2
+  E3 -->|"5 asks for any chat, file, user list, statistics"| P6
+  P6 -->|"6 everything, plus the whole database file"| E3
+  P6 <-->|"7 reads any record"| DS1
+  DS2 -->|"8 original files"| P6
+  P6 -.- N
+  linkStyle 5 stroke:#d00,stroke-width:3px
+  classDef note fill:#fff7e0,stroke:#e08000,color:#333
+  style TB1 fill:none,stroke:#d00,stroke-width:2px,stroke-dasharray:6 4
+  style TB2 fill:none,stroke:#d00,stroke-width:2px,stroke-dasharray:6 4

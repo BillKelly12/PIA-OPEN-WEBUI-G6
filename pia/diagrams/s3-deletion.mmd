@@ -1,0 +1,29 @@
+---
+config:
+  layout: elk
+---
+flowchart LR
+  A1["User deletes a chat"]
+  A2["User deletes a file"]
+  A3["Admin deletes a user"]
+  R1["Removed: chat, messages, share copy, tags"]:::gone
+  S1["Stays: share access row; deleted text lingers in the database journal until it is tidied up"]:::stays
+  U1["Stays if the answer was rated: full chat copy (code only, not yet run)"]:::unsure
+  R2["Removed: file record, uploaded file"]:::gone
+  S2["Stays: text pieces in the vector store"]:::stays
+  S2b["Stays: passages already copied into chats"]:::stays
+  R3["Removed: account, login, own chats"]:::gone
+  S3["Stays: files (record, upload, full text), vector pieces, memories, notes, folders"]:::stays
+  U3["Stays: rated chat copies (code only, not yet run)"]:::unsure
+  A1 --> R1
+  A1 -.-> S1
+  A1 -.-> U1
+  A2 --> R2
+  A2 -.-> S2
+  A2 -.-> S2b
+  A3 --> R3
+  A3 -.-> S3
+  A3 -.-> U3
+  classDef gone fill:#e6f4ea,stroke:#2e7d32,color:#222
+  classDef stays fill:#fdecea,stroke:#c62828,color:#222
+  classDef unsure fill:#fff7e0,stroke:#e08000,color:#222

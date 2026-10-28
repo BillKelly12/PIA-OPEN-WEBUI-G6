@@ -1,0 +1,17 @@
+R03 OBSERVED idle start: non-empty tables, outbound connections, model-server calls -> tables={'alembic_version': 1, 'config': 372}
+R01 OBSERVED first signup role / later self-signup status / admin-created role -> admin / 403 / user
+R02 OBSERVED session cookie attributes -> HttpOnly; Max-Age=2419200; Path=/; SameSite=lax
+R05 OBSERVED models visible to an ordinary user before / after admin grant -> 0 / 1
+R04 OBSERVED outbound connection attempts seen after 2 model listings (only destinations are recorded, no payload) -> 1 attempt(s) to ['api.openai.com:443']
+R06 OBSERVED upload: marker found on disk in (raw bytes) / marker in file.data row / chunk count / embed request carried text / path in response -> ['uploads/2a3d8761-8fa7-47ca-9e30-94173cac8560_interview_p07.txt', 'vector_db/chroma.sqlite3', 'webui.db-wal'] / True / 1 / True / /tmp/claude-0/-home-claude/07bcb68b-811d-591f-bba8-cfd3b6233f3b/scratchpad/run3/data/uploads/2a3d8761-8fa7-47ca-9e30-94173cac8560_interview_p07.txt
+R07 OBSERVED one RAG turn: calls to model server / passage text inside the prompt / stored message rows with sources / tag rows / title -> 6 calls ['/api/chat', '/api/embed'] / True / 1 / 2 / 'Stub chat title'
+R08 OBSERVED share: link without login / user without grant / 'anyone' grant rows after attempt / granted user sees passages / same user on underlying file + content / admin -> 401 / 401 / 0 / 200, passages visible=True / 404+404 / 200
+R09 OBSERVED admin status codes / ordinary user status codes / db download bytes / audit.log present / log lines naming the admin for a bulk export -> {'chat list of other user': 200, 'any chat': 200, 'export all chats': 200, 'file record': 200, 'extracted text': 200, 'raw file': 200, 'all users': 200, 'analytics summary': 200, 'database file': 200} / {'chat list of other user': 401, 'any chat': 401, 'export all chats': 401, 'file record': 404, 'extracted text': 404, 'raw file': 404, 'all users': 401, 'analytics summary': 401, 'database file': 401} / 729088 / False / 0
+R13 OBSERVED temporary chat: new chat rows / marker on disk / calls to model server -> 0 / [] / 1
+R14 OBSERVED default log: contains login e-mail / contains chunk text / contains chat text -> True / False / False
+R10 OBSERVED delete chat: status / rows left (chat, chat_message, shared_chat, tag) / grant rows before->after / marker in -wal file now / marker in checkpointed main file -> 200 / {'chat': 0, 'chat_message': 0, 'shared_chat': 0, 'tag': 0} / 1->1 / True / False
+R11 OBSERVED delete file: status / marker still in uploads / chunks still in vector collection file-{id} and containing text -> 200 / [] / 1 chunk(s), text present=True
+R12 OBSERVED admin deletes Alice: status / tables still holding rows with her user_id / vector collections still holding her survey text / upload files left -> 200 / {'memory': 1, 'folder': 1, 'file': 1, 'note': 1} / ['file-78a64eea-4cca-442d-8587-31b639577276', 'user-memory-c2a14d86-c436-429d-90ee-d19c579c94da'] / ['uploads/78a64eea-4cca-442d-8587-31b639577276_survey_q.txt']
+
+SUMMARY: {'R03': 'OBSERVED', 'R01': 'OBSERVED', 'R02': 'OBSERVED', 'R05': 'OBSERVED', 'R04': 'OBSERVED', 'R06': 'OBSERVED', 'R07': 'OBSERVED', 'R08': 'OBSERVED', 'R09': 'OBSERVED', 'R13': 'OBSERVED', 'R14': 'OBSERVED', 'R10': 'OBSERVED', 'R11': 'OBSERVED', 'R12': 'OBSERVED'}
+R15 (volumes) is produced by measure_volumes.py, not here.

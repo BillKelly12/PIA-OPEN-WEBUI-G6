@@ -1,0 +1,32 @@
+---
+config:
+  layout: elk
+---
+flowchart LR
+  subgraph TB1["TB1 · User's device"]
+    E1["E1 Researcher"]
+  end
+  subgraph TB2["TB2 · Lab server"]
+    P3("P3 Intake and indexing")
+    P4("P4 Document search")
+    P2("P2 Chat")
+    P7("P7 Ollama, local model")
+    DS1[("DS1 Database")]
+    DS2[("DS2 Uploads folder")]
+    DS3[("DS3 Vector store")]
+  end
+  E1 -->|"1 uploads a draft"| P3
+  P3 -->|"2 original file · COPY 1"| DS2
+  P3 -->|"3 full text · COPY 2"| DS1
+  P3 <-->|"4 text pieces out, number codes back"| P7
+  P3 -->|"5 pieces + codes + user id · COPY 3"| DS3
+  E1 -->|"6 asks a question"| P2
+  P2 -->|"7 question"| P4
+  P4 <-->|"8 question out, code back"| P7
+  DS3 -->|"9 closest pieces"| P4
+  P4 -->|"10 passages"| P2
+  P2 <-->|"11 whole chat + passages out, answer back"| P7
+  P2 -->|"12 answer"| E1
+  P2 <-->|"13 chat + passages saved · COPY 4"| DS1
+  style TB1 fill:none,stroke:#d00,stroke-width:2px,stroke-dasharray:6 4
+  style TB2 fill:none,stroke:#d00,stroke-width:2px,stroke-dasharray:6 4

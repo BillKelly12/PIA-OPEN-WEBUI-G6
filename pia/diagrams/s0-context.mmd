@@ -1,0 +1,36 @@
+---
+config:
+  layout: elk
+---
+flowchart LR
+  subgraph TB1["TB1 · Users' devices"]
+    E1["E1 Researcher"]
+    E2["E2 Colleague with share access"]
+    E3["E3 Admin (supervisor / IT)"]
+    P9("P9 Browser: share-to-community button")
+  end
+  subgraph TB2["TB2 · Lab server"]
+    P0("P0 Open WebUI server")
+    P7("P7 Ollama, local model")
+    DS[("DS Lab stores: database, uploads, vector store, log")]
+  end
+  subgraph TB3["TB3 · Internet"]
+    E4["E4 OpenAI, GitHub, openwebui.com, Google icons"]
+  end
+  E1 -->|"login, chats, files"| P0
+  P0 -->|"answers, own history"| E1
+  E2 -->|"link + login"| P0
+  P0 -->|"frozen copy of a chat"| E2
+  E3 -->|"admin requests"| P0
+  P0 -->|"any chat, file, user list, whole database"| E3
+  P0 <-->|"all stored data"| DS
+  P0 <-->|"prompts + passages / answers + number codes"| P7
+  P0 -->|"model-list request, version check (no documents)"| E4
+  E1 -->|"click"| P9
+  P9 -->|"full chat, only on click"| E4
+  linkStyle 5 stroke:#d00,stroke-width:3px
+  linkStyle 8 stroke:#e08000,stroke-width:2px
+  linkStyle 10 stroke:#e08000,stroke-width:2px
+  style TB1 fill:none,stroke:#d00,stroke-width:2px,stroke-dasharray:6 4
+  style TB2 fill:none,stroke:#d00,stroke-width:2px,stroke-dasharray:6 4
+  style TB3 fill:none,stroke:#d00,stroke-width:2px,stroke-dasharray:6 4
