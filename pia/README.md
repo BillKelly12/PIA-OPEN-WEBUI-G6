@@ -2,7 +2,7 @@
 
 (Folder named `pia/` because the upstream Open WebUI repo already has its own `docs/`.)
 
-All text here was drafted with an AI assistant and **must be vetted by the team before it is used in the report**. Nothing below is final. Last updated: 28 Oct 2026.
+All text here was drafted with an AI assistant and **must be vetted by the team before it is used in the report**. Nothing below is final. Last updated: 29 Oct 2026.
 
 ## What is where, and its status
 
@@ -14,6 +14,7 @@ All text here was drafted with an AI assistant and **must be vetted by the team 
 | `draft1-review.md` | Review of the 1st draft | Written **before** the teacher's input of 28 Oct. Its §5 (findings options) is superseded by `option-b-plan.md`; the rest still holds. |
 | `option-b-plan.md` | Proposal: extend the use case with an external model; issues B1–B8, techniques from the course, tests | **Proposal, not a decision.** To be agreed by the team (and, ideally, the TAs). |
 | `verification/` | Scripts that reproduce every "VERIFIED (run R##)" claim; last output | Baseline. Needs extending with an OpenAI-protocol stub for Option B. |
+| `tests/` | **Eight privacy tests** on the official Open WebUI test harness: `bash pia/tests/run.sh`; see `tests/README.md`. All fail today by design. | New (29 Oct). To be vetted by the code pair. |
 | `diagrams/` | Mermaid sources of all figures | — |
 
 ## Vetting checklist (suggested split)

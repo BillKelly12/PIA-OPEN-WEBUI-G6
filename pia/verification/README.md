@@ -14,7 +14,7 @@ Purpose: every statement tagged "VERIFIED (run R##)" in `pia/data-flow-analysis.
 | `volumes_result.json` | Output of the volume measurement. |
 
 ## Run (Linux or macOS or WSL; needs Python 3.12 and `uv`)
-Tested from a clean install on 29 Oct 2026 (all 14 lines OBSERVED). `<repo>` is your clone of the fork at commit `6a18585`. Paths below assume you run from `<repo>`.
+Tested from a clean install on 29 Oct 2026 (all 14 lines OBSERVED). `<repo>` is your clone of the fork at commit `6a18585`. **Run every command from the repo root `<repo>` (the folder that contains `backend/` and `pia/`), not from inside `pia/`.** If you have a real Ollama running (port 11434), that is fine: the fake one uses port 11435.
 
 **1. One-time setup: Python environment (about 1 minute).** Open WebUI needs Python 3.11 or 3.12 (not 3.13). We skip the heavy packages (model libraries, other vector databases) because the stub never uses them.
 ```
@@ -39,7 +39,7 @@ Expected: 14 lines R01–R14 ending in `SUMMARY`, all `OBSERVED`. Compare with `
 
 **4. Stop everything:** `for f in /tmp/work/*.pid; do kill $(cat $f); done`
 
-Ports used: 8080 (Open WebUI), 11434 (stub Ollama), 3128 (egress logger). Free them first if another program uses them. Windows: use WSL.
+Ports used: 8080 (Open WebUI), 11435 (fake Ollama, change with `STUB_PORT=...`; it is deliberately not 11434 so it cannot clash with a real Ollama), 3128 (egress logger). Free 8080 and 3128 first if another program uses them. Windows: use WSL.
 
 **Optional:** `measure_volumes.py` produces R15 (storage growth); it needs the data folder and an ordinary user token, see its header comment.
 

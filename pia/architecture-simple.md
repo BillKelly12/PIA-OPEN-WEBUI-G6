@@ -147,7 +147,7 @@ flowchart LR
 
 ![Figure 4 — Sharing a chat and the admin's reach](figures/s2-share-admin.png)
 
-Sharing makes a frozen copy that includes document passages but not the file (VERIFIED, run R08). The admin reads any record and downloads the whole database (VERIFIED, run R09), and by default nothing records it.
+Sharing makes a frozen copy that includes document passages. A colleague can open the file itself only if it is stored on the chat's messages; passages that came from a knowledge base the colleague cannot open are still in the copy (VERIFIED, run R08 and test B7). The admin reads any record and downloads the whole database (VERIFIED, run R09), and by default nothing records it.
 
 <details><summary>Mermaid source</summary>
 

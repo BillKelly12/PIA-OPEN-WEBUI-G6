@@ -8,13 +8,13 @@ Tags: VERIFIED (code `path:line` / run R##), HYPOTHESIS. LINDDUN categories (lec
 
 | ID | What goes wrong | Evidence | LINDDUN | GDPR (candidate) |
 |---|---|---|---|---|
-| B1 | **Every chat turn sends the whole chat plus the retrieved document passages to the provider.** Interview text reaches a third party the interviewees never heard of. | The same content goes to Ollama today (VERIFIED, R07). That the external route sends the same: HYPOTHESIS, to confirm with the stub (`routers/openai.py:1409` is the external chat route). | Disclosure of information; Unawareness | 5(1)(b),(c), 13/14, 28 |
-| B2 | **If the admin sets external embeddings, every chunk of every upload goes out at upload time**, even when chats stay local. | VERIFIED code: `retrieval/utils.py:891-905` posts `{'input': texts}` to the configured endpoint. Default engine is local (`config.py:1009`). Run: pending. | Disclosure | 5(1)(c), 28, Ch. V |
-| B3 | **Background tasks follow the chat model.** Title, tags and follow-ups are extra calls that carry the whole chat to the provider unless a task model is set. | VERIFIED code: `utils/task.py:17-28` (external chat model → `TASK_MODEL_EXTERNAL` only if set, otherwise the chat model itself); default empty `config.py:2212`. Run: pending. | Disclosure; Non-compliance | 5(1)(c), 25 |
+| B1 | **Every chat turn sends the whole chat plus the retrieved document passages to the provider.** Interview text reaches a third party the interviewees never heard of. | **VERIFIED (test B1, 29 Oct):** with a scripted external provider recording requests, the chat request contained the interviewee's name, e-mail and phone from the retrieved passage. Also VERIFIED for the local route (R07). | Disclosure of information; Unawareness | 5(1)(b),(c), 13/14, 28 |
+| B2 | **If the admin sets external embeddings, every chunk of every upload goes out at upload time**, even when chats stay local. | VERIFIED code: `retrieval/utils.py:891-905` posts `{'input': texts}` to the configured endpoint. Default engine is local (`config.py:1009`). **VERIFIED (test B2/B4, 29 Oct):** with the OpenAI embedding engine configured, the provider received the identifiers at upload. | Disclosure | 5(1)(c), 28, Ch. V |
+| B3 | **Background tasks follow the chat model.** Title, tags and follow-ups are extra calls that carry the whole chat to the provider unless a task model is set. | VERIFIED code: `utils/task.py:17-28` (external chat model → `TASK_MODEL_EXTERNAL` only if set, otherwise the chat model itself); default empty `config.py:2212`. **VERIFIED (test B3, 29 Oct):** with title, tags and follow-up generation on and no task model set, 3 background requests reached the external provider, each carrying the name and e-mail typed in the chat. | Disclosure; Non-compliance | 5(1)(c), 25 |
 | B4 | **No per-document or per-chat rule.** Nothing found that stops a user sending a file marked "interview" to the external model; the only gate is per model (admin grants) and the model's `connection_type` (`utils/task.py:21`). | HYPOTHESIS (search for redaction/local-only features found nothing relevant; absence is a search result). | Non-compliance; Unawareness | 5(1)(b), 25 |
 | B5 | **Identity can travel with the data.** If `ENABLE_FORWARD_USER_INFO_HEADERS` is turned on, name, e-mail and role go to the provider with each request. | VERIFIED code: default off `env.py:997`; used in `routers/openai.py:104` and `retrieval/utils.py:899-900`. | Identifying; Linking | 5(1)(c), 25 |
 | B6 | **Provider side: retention, training, location.** Outside what we can observe. Legal lecture example: the Italian authority's order against ChatGPT (lawfulness, transparency, accuracy). | HYPOTHESIS by design. | Non-compliance | 28, 44–49, 5(1)(a) |
-| B7 | **RAG breaks document permissions.** A shared chat shows document passages to a colleague who gets 404 on the file itself. Worse with an external model: the passages are already stored and sent. | VERIFIED R08. | Disclosure | 5(1)(f), 25 |
+| B7 | **Sharing a chat discloses retrieved passages the colleague cannot otherwise open.** Narrowed after checking the code: a file stored on the chat message is readable through the share by design (`utils/access_control/files.py`); passages from a knowledge base the colleague cannot open are not. | **VERIFIED (test B7, 29 Oct),** knowledge-base case. R08's wording was too broad. | Disclosure | 5(1)(f), 25 |
 | B8 | **Model-derived personal data** (titles, tags, memories) is created and stored; with an external model it is created by the provider. | VERIFIED R07 (stored); provider part HYPOTHESIS. | Detecting; Unawareness | 5(1)(a), 15 |
 
 Easy-fix findings (deletion, admin visibility, audit log) move to a short section **after** the threat model, as the teacher asked. They stay our two mandatory tests with implemented fixes.
@@ -37,7 +37,7 @@ Part 3 must show cost-benefit: gateway + routing are cheap and testable; DP, MPC
 
 ## 3. Testing (Rule 5: no dependence on model output)
 
-Tools needed: **none beyond what we have** — a stub that plays the external provider (OpenAI protocol: `/v1/chat/completions`, `/v1/embeddings`) and records every request, our egress proxy, and `pytest`.
+**Update 29 Oct:** the official Open WebUI test suite (separate repository `open-webui/tests`, pytest) already contains a scripted OpenAI-style provider that records every request, so we did not build our own stub. Our tests live in `pia/tests/privacy/` and run on that harness with `bash pia/tests/run.sh` (see `pia/tests/README.md`). The table below is the original plan; the implemented tests are in the README.
 
 | Test | Asserts | Fails now? |
 |---|---|---|
@@ -52,6 +52,6 @@ Optional extras (evidence, not pass/fail):
 - **Giskard** (v3 scan): needs an LLM provider and key, defaults to OpenAI's `gpt-4o-mini` as judge; privacy detectors unconfirmed ([PyPI](https://pypi.org/project/giskard)). Use synthetic data only and treat results as measurements.
 
 ## 4. Next steps (code pair, about 3–4 days)
-1. Extend `stub_ollama.py` to the OpenAI protocol; run the scenario with the external route and confirm B1–B3 (changes them from HYPOTHESIS to VERIFIED, or drops them).
+1. ~~Extend `stub_ollama.py` to the OpenAI protocol~~ Done differently: the official harness provides the external-provider stub; B1–B3 are now VERIFIED by tests.
 2. Check whether a filter Function can modify messages before they leave (`routers/functions.py:207` shows functions are admin-created; `utils/filter.py` handles filters): HYPOTHESIS until read.
 3. Write T1–T5 as pytest; screenshot a failing run for the draft.

@@ -62,7 +62,7 @@ Figure 2 and Figure 3 draw red arrows to model providers, web search and documen
 | File deletion leaves the text chunks in the vector store | VERIFIED R11; cause `routers/files.py:1053` calls `delete` with no id or filter and `retrieval/vector/dbs/chroma.py:185-202` then does nothing | An interviewee's words stay searchable after the user "deleted" the transcript |
 | User deletion leaves files, notes, folders, memories and their vectors | VERIFIED R12; `models/users.py:849-863` | A PhD student leaves the lab; their survey data stays on the server with no owner |
 | Admin reads are invisible | VERIFIED R09 (no actor in default log, no audit file) | No accountability for the most powerful role over students' data |
-| Retrieved passages are copied into chats and share snapshots | VERIFIED R07, R08 | Interview text lives on in places the file deletion never reaches; a colleague can read passages but not the source file (R08) |
+| Retrieved passages are copied into chats and share snapshots | VERIFIED R07, R08 | Interview text lives on in places the file deletion never reaches; a colleague can read passages of a knowledge base they cannot open (R08, test B7); a file stored on the chat message is readable through the share by design |
 | Share grant row outlives the deleted chat | VERIFIED R10 (1 → 1) | Small, but shows the same pattern (orphan data) |
 | `api.openai.com` is contacted by default | VERIFIED R04 (1 attempt; no chat data in the request) | Weaker as a harm (no documents leave) but it contradicts the lab's "nothing leaves" premise |
 | Nothing expires by age | VERIFIED by search only (`data-flow-analysis.md` §3) | Storage limitation depends entirely on people remembering to delete |

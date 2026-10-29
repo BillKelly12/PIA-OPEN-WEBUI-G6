@@ -1,0 +1,26 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.7.0 -- ../owui-tests/venv/bin/python
+metadata: {'Python': '3.12.3', 'Platform': 'Linux-6.18.44-fc-v185-x86_64-with-glibc2.39', 'Packages': {'pytest': '8.4.2', 'pluggy': '1.7.0'}, 'Plugins': {'playwright': '0.10.0', 'html': '4.2.0', 'platformdirs': '4.14.0', 'split': '0.11.0', 'metadata': '3.1.1', 'langsmith': '0.14.16', 'asyncio': '1.4.1', 'allure-pytest': '2.16.2', 'anyio': '4.15.1'}, 'JAVA_HOME': '/usr/lib/jvm/java-21-openjdk-amd64'}
+rootdir: ../owui-tests/suite
+configfile: pyproject.toml
+plugins: playwright-0.10.0, html-4.2.0, platformdirs-4.14.0, split-0.11.0, metadata-3.1.1, langsmith-0.14.16, asyncio-1.4.1, allure-pytest-2.16.2, anyio-4.15.1
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 8 items
+integration/privacy/test_deletion.py::test_d1_deleting_a_file_leaves_no_text_in_the_vector_store FAILED [ 12%]
+integration/privacy/test_deletion.py::test_d2_deleting_a_user_removes_their_file_chunks FAILED [ 25%]
+integration/privacy/test_deletion.py::test_d2_deleting_a_user_removes_their_memory_vectors FAILED [ 37%]
+integration/privacy/test_deletion.py::test_d2_deleting_a_user_removes_their_uploaded_files FAILED [ 50%]
+integration/privacy/test_provider_payloads.py::test_b1_retrieved_passages_do_not_carry_identifiers_to_the_provider FAILED [ 62%]
+integration/privacy/test_provider_payloads.py::test_b2_b4_uploaded_chunks_do_not_carry_identifiers_to_the_embedding_provider FAILED [ 75%]
+integration/privacy/test_provider_payloads.py::test_b3_background_tasks_do_not_carry_the_chat_to_the_provider FAILED [ 87%]
+integration/privacy/test_shared_chat.py::test_b7_a_shared_chat_does_not_show_passages_of_a_knowledge_base_the_reader_cannot_open FAILED [100%]
+=================================== FAILURES ===================================
+../owui-tests/suite/integration/privacy/test_deletion.py:48: AssertionError: 1 chunk(s) of the deleted file are still stored, e.g. 'Interview 07. Participant: Marta Vandenbroeck, PhD student, reachable '
+../owui-tests/suite/integration/privacy/test_deletion.py:78: AssertionError: 1 chunk(s) of the deleted user's file are still stored
+../owui-tests/suite/integration/privacy/test_deletion.py:83: AssertionError: 1 memory vector(s) of the deleted user are still stored
+../owui-tests/suite/integration/privacy/test_deletion.py:90: AssertionError: file record answers HTTP 200; stored copies on disk: ['c5e120f9-df49-4c17-a138-728f954d2a77_survey_answers.txt']
+../owui-tests/suite/integration/privacy/test_provider_payloads.py:51: AssertionError: identifiers reached the provider (chat completions): {'Marta Vandenbroeck': 1, 'marta.vandenbroeck@example.org': 1, '+32 470 12 34 56': 1}
+../owui-tests/suite/integration/privacy/test_provider_payloads.py:51: AssertionError: identifiers reached the provider (embeddings at upload): {'Marta Vandenbroeck': 1, 'marta.vandenbroeck@example.org': 1, '+32 470 12 34 56': 1}
+../owui-tests/suite/integration/privacy/test_provider_payloads.py:51: AssertionError: identifiers reached the provider (3 background task request(s)): {'Marta Vandenbroeck': 3, 'marta.vandenbroeck@example.org': 3, '+32 470 12 34 56': 0}
+../owui-tests/suite/integration/privacy/test_shared_chat.py:72: AssertionError: Bob, who cannot open the knowledge base, can read its contact details in the shared chat
+============================== 8 failed in 14.65s ==============================
