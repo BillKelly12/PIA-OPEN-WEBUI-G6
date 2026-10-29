@@ -5,7 +5,7 @@ Eight tests, one per finding, written for pytest on the **official Open WebUI te
 outside: the HTTP API, the data folder, and the requests sent to a model provider. No test depends on
 what a model answers (course rule 5). All personal data in them is synthetic.
 
-**Today all eight FAIL on the unmodified code, on purpose.** A test turns green only when the
+**Today all eight FAIL on the unmodified code, on purpose.** Reproduced on two machines on 29 Oct 2026 (Linux, Python 3.12.3 and 3.12.15): the same 8 failures with the same messages. A test turns green only when the
 mitigation for its finding is implemented in the fork.
 
 ## Run
@@ -33,6 +33,9 @@ suite's `integration/` folder and runs it against `backend/`. It does not touch 
 
 The provider-side tests pass when no identifier reaches the provider. A pseudonymisation gateway or a
 rule that keeps the call local both satisfy them; which mitigation we implement is a team decision.
+
+## Method (how to cite it)
+The tests follow the official suite's own contract (`docs/regression-test-contract.md` in `open-webui/tests`): a regression test is pinned to one problem, must fail before the fix and pass after it, and states in its docstring what it covers. The harness (fake provider, instance start-up, accounts) is the Open WebUI project's work, BSD-3 licence; our tests are in `privacy/`.
 
 ## Notes for reviewers (what each test does *not* prove)
 - The harness provider is a scripted stand-in. The tests show **what Open WebUI sends**, not what a real provider does with it (that stays an assumption, handled by contract).
