@@ -46,6 +46,7 @@ from open_webui.utils.chat_fork import build_fork_history
 from open_webui.utils.context_compaction import compact_chat_branch, get_chat_context_usage
 from open_webui.utils.erasure import scrub_deleted_text, strip_rating_copies
 from open_webui.utils.json_codec import JSONCodec
+from open_webui.utils.shared_sources import withhold_unreadable_sources
 from open_webui.utils.misc import get_message_list
 from open_webui.utils.models import get_all_models
 from pydantic import BaseModel
@@ -158,6 +159,8 @@ async def shared_chat_response(chat, user=None, db=None):
                 authors[author_id] = {'id': author_id, 'name': author['name']}
         if user is None or (message.get('user_id') or chat.user_id) != user.id:
             message.pop('meta', None)
+    # Group 6 PIA (B7): a reader sees only the retrieved passages of sources they may open.
+    await withhold_unreadable_sources(messages, chat.user_id, user, db=db)
     missing_ids = {message['user_id'] for message in messages if message.get('role') == 'user'} - authors.keys()
     if missing_ids:
         for author in await Users.get_users_by_user_ids(list(missing_ids), db=db):
