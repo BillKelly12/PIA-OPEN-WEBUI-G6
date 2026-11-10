@@ -22,6 +22,7 @@ from open_webui.env import (
     DATABASE_SQLITE_PRAGMA_CACHE_SIZE,
     DATABASE_SQLITE_PRAGMA_JOURNAL_SIZE_LIMIT,
     DATABASE_SQLITE_PRAGMA_MMAP_SIZE,
+    DATABASE_SQLITE_PRAGMA_SECURE_DELETE,
     DATABASE_SQLITE_PRAGMA_SYNCHRONOUS,
     DATABASE_SQLITE_PRAGMA_TEMP_STORE,
     DATABASE_URL,
@@ -397,6 +398,8 @@ elif 'sqlite' in SQLALCHEMY_DATABASE_URL:
             cursor.execute(f'PRAGMA mmap_size={DATABASE_SQLITE_PRAGMA_MMAP_SIZE}')
         if DATABASE_SQLITE_PRAGMA_JOURNAL_SIZE_LIMIT:
             cursor.execute(f'PRAGMA journal_size_limit={DATABASE_SQLITE_PRAGMA_JOURNAL_SIZE_LIMIT}')
+        if DATABASE_SQLITE_PRAGMA_SECURE_DELETE:
+            cursor.execute(f'PRAGMA secure_delete={DATABASE_SQLITE_PRAGMA_SECURE_DELETE}')
         cursor.close()
 
     def on_connect(dbapi_connection, connection_record):

@@ -357,6 +357,11 @@ DATABASE_SQLITE_PRAGMA_MMAP_SIZE = os.getenv('DATABASE_SQLITE_PRAGMA_MMAP_SIZE',
 # truncated.  67108864 ≈ 64 MB.  Set to -1 for no limit (SQLite default).
 DATABASE_SQLITE_PRAGMA_JOURNAL_SIZE_LIMIT = os.getenv('DATABASE_SQLITE_PRAGMA_JOURNAL_SIZE_LIMIT', '67108864')
 
+# PRAGMA secure_delete: ON overwrites deleted content with zeros, so text a user deleted
+# cannot be read back from the database file's free pages (GDPR Art. 17, 5(1)(e)).
+# Valid values: ON, OFF, FAST. Group 6 PIA fix for finding D3.
+DATABASE_SQLITE_PRAGMA_SECURE_DELETE = os.getenv('DATABASE_SQLITE_PRAGMA_SECURE_DELETE', 'ON')
+
 # Seconds between presence writes per user per worker; keep under the 180s active-user window. 0 disables.
 try:
     DATABASE_USER_ACTIVE_STATUS_UPDATE_INTERVAL = float(os.getenv('DATABASE_USER_ACTIVE_STATUS_UPDATE_INTERVAL', '60'))

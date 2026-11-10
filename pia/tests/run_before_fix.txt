@@ -1,0 +1,145 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.7.0 -- ../owui-tests/venv/bin/python
+metadata: {'Python': '3.12.3', 'Platform': 'Linux-6.18.44-fc-v338-x86_64-with-glibc2.39', 'Packages': {'pytest': '8.4.2', 'pluggy': '1.7.0'}, 'Plugins': {'playwright': '0.10.0', 'html': '4.2.0', 'split': '0.11.0', 'metadata': '3.1.1', 'allure-pytest': '2.16.2', 'langsmith': '0.14.17', 'anyio': '4.16.0', 'platformdirs': '4.14.5', 'asyncio': '1.4.1.post1'}, 'JAVA_HOME': '/usr/lib/jvm/java-21-openjdk-amd64'}
+rootdir: ../owui-tests/suite
+configfile: pyproject.toml
+plugins: playwright-0.10.0, html-4.2.0, split-0.11.0, metadata-3.1.1, allure-pytest-2.16.2, langsmith-0.14.17, anyio-4.16.0, platformdirs-4.14.5, asyncio-1.4.1.post1
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 10 items
+
+integration/privacy/test_database.py::test_d3_deleting_a_chat_leaves_no_text_in_the_database_files FAILED [ 10%]
+integration/privacy/test_database.py::test_d4_deleting_a_rated_chat_removes_its_rating_copy FAILED [ 20%]
+integration/privacy/test_deletion.py::test_d1_deleting_a_file_leaves_no_text_in_the_vector_store FAILED [ 30%]
+integration/privacy/test_deletion.py::test_d2_deleting_a_user_removes_their_file_chunks FAILED [ 40%]
+integration/privacy/test_deletion.py::test_d2_deleting_a_user_removes_their_memory_vectors FAILED [ 50%]
+integration/privacy/test_deletion.py::test_d2_deleting_a_user_removes_their_uploaded_files FAILED [ 60%]
+integration/privacy/test_provider_payloads.py::test_b1_retrieved_passages_do_not_carry_identifiers_to_the_provider FAILED [ 70%]
+integration/privacy/test_provider_payloads.py::test_b2_b4_uploaded_chunks_do_not_carry_identifiers_to_the_embedding_provider FAILED [ 80%]
+integration/privacy/test_provider_payloads.py::test_b3_background_tasks_do_not_carry_the_chat_to_the_provider FAILED [ 90%]
+integration/privacy/test_shared_chat.py::test_b7_a_shared_chat_does_not_show_passages_of_a_knowledge_base_the_reader_cannot_open FAILED [100%]
+
+=================================== FAILURES ===================================
+_________ test_d3_deleting_a_chat_leaves_no_text_in_the_database_files _________
+integration/privacy/test_database.py:83: in test_d3_deleting_a_chat_leaves_no_text_in_the_database_files
+    assert not left, f"the deleted chat's text is still readable in: {left}"
+E   AssertionError: the deleted chat's text is still readable in: ['webui.db-wal']
+E   assert not ['webui.db-wal']
+____________ test_d4_deleting_a_rated_chat_removes_its_rating_copy _____________
+integration/privacy/test_database.py:119: in test_d4_deleting_a_rated_chat_removes_its_rating_copy
+    assert marker not in after.text, "the admin export still returns the deleted chat through its rating copy"
+E   AssertionError: the admin export still returns the deleted chat through its rating copy
+E   assert 'PIA-DELETED...250201e45b7f' not in '[{"id":"447...1794312951}]'
+E     
+E     'PIA-DELETED-CHAT-250201e45b7f' is contained here:
+E       [{"id":"447669cd-5019-483f-b49a-becc436dc6a9","user_id":"de2bd1b1-96bb-4c55-95a5-a1589b9416ad","version":0,"type":"rating","data":{"rating":1,"model_id":"mock-model","sibling_model_ids":null,"reason":null,"comment":null},"meta":{"chat_id":"1ac1e51f-6e40-4ef1-94bb-a32667dd707f","message_id":"a843dde8-f938-40fb-b58f-345a1beba539"},"snapshot":{"chat":{"title":"Seeded chat","models":["mock-model"],"history":{"currentId":"a843dde8-f938-40fb-b58f-345a1beba539","messages":{"c4ad430b-4aeb-4efb-b023-9380eae57797":{"model":"mock...
+E     
+E     ...Full output truncated (1 line hidden), use '-vv' to show
+__________ test_d1_deleting_a_file_leaves_no_text_in_the_vector_store __________
+integration/privacy/test_deletion.py:48: in test_d1_deleting_a_file_leaves_no_text_in_the_vector_store
+    assert not left, f"{len(left)} chunk(s) of the deleted file are still stored, e.g. {left[0][:70]!r}"
+E   AssertionError: 1 chunk(s) of the deleted file are still stored, e.g. 'Interview 07. Participant: Marta Vandenbroeck, PhD student, reachable '
+E   assert not ['Interview 07. Participant: Marta Vandenbroeck, PhD student, reachable at marta.vandenbroeck@example.org or +32 470 12 34 56.  \nShe said her supervisor pressured her to add a co-author who did not contribute, and that she is afraid to report it before her thesis defence.']
+______________ test_d2_deleting_a_user_removes_their_file_chunks _______________
+integration/privacy/test_deletion.py:78: in test_d2_deleting_a_user_removes_their_file_chunks
+    assert not left, f"{len(left)} chunk(s) of the deleted user's file are still stored"
+E   AssertionError: 1 chunk(s) of the deleted user's file are still stored
+E   assert not ['Interview 07. Participant: Marta Vandenbroeck, PhD student, reachable at marta.vandenbroeck@example.org or +32 470 12 34 56.  \nShe said her supervisor pressured her to add a co-author who did not contribute, and that she is afraid to report it before her thesis defence.']
+_____________ test_d2_deleting_a_user_removes_their_memory_vectors _____________
+integration/privacy/test_deletion.py:83: in test_d2_deleting_a_user_removes_their_memory_vectors
+    assert not left, f"{len(left)} memory vector(s) of the deleted user are still stored"
+E   AssertionError: 1 memory vector(s) of the deleted user are still stored
+E   assert not ['My contact is marta.vandenbroeck@example.org']
+_____________ test_d2_deleting_a_user_removes_their_uploaded_files _____________
+integration/privacy/test_deletion.py:90: in test_d2_deleting_a_user_removes_their_uploaded_files
+    assert still_readable.status_code == 404 and not on_disk, (
+E   AssertionError: file record answers HTTP 200; stored copies on disk: ['c5431d6f-b30b-4682-b491-0e1d5694eeda_survey_answers.txt']
+E   assert (200 == 404)
+E    +  where 200 = <Response [200 OK]>.status_code
+_____ test_b1_retrieved_passages_do_not_carry_identifiers_to_the_provider ______
+integration/privacy/test_provider_payloads.py:69: in test_b1_retrieved_passages_do_not_carry_identifiers_to_the_provider
+    _no_leak(leaked(upstream.chat_requests()), "chat completions")
+integration/privacy/test_provider_payloads.py:51: in _no_leak
+    assert not any(counts.values()), f"identifiers reached the provider ({where}): {counts}"
+E   AssertionError: identifiers reached the provider (chat completions): {'Marta Vandenbroeck': 1, 'marta.vandenbroeck@example.org': 1, '+32 470 12 34 56': 1}
+E   assert not True
+E    +  where True = any(dict_values([1, 1, 1]))
+E    +    where dict_values([1, 1, 1]) = <built-in method values of dict object at 0x7f3cf4694600>()
+E    +      where <built-in method values of dict object at 0x7f3cf4694600> = {'+32 470 12 34 56': 1, 'Marta Vandenbroeck': 1, 'marta.vandenbroeck@example.org': 1}.values
+_ test_b2_b4_uploaded_chunks_do_not_carry_identifiers_to_the_embedding_provider _
+integration/privacy/test_provider_payloads.py:83: in test_b2_b4_uploaded_chunks_do_not_carry_identifiers_to_the_embedding_provider
+    _no_leak(leaked(_bodies(upstream, "/embeddings")), "embeddings at upload")
+integration/privacy/test_provider_payloads.py:51: in _no_leak
+    assert not any(counts.values()), f"identifiers reached the provider ({where}): {counts}"
+E   AssertionError: identifiers reached the provider (embeddings at upload): {'Marta Vandenbroeck': 1, 'marta.vandenbroeck@example.org': 1, '+32 470 12 34 56': 1}
+E   assert not True
+E    +  where True = any(dict_values([1, 1, 1]))
+E    +    where dict_values([1, 1, 1]) = <built-in method values of dict object at 0x7f3cf465c700>()
+E    +      where <built-in method values of dict object at 0x7f3cf465c700> = {'+32 470 12 34 56': 1, 'Marta Vandenbroeck': 1, 'marta.vandenbroeck@example.org': 1}.values
+________ test_b3_background_tasks_do_not_carry_the_chat_to_the_provider ________
+integration/privacy/test_provider_payloads.py:113: in test_b3_background_tasks_do_not_carry_the_chat_to_the_provider
+    _no_leak(leaked(tasks), f"{len(tasks)} background task request(s)")
+integration/privacy/test_provider_payloads.py:51: in _no_leak
+    assert not any(counts.values()), f"identifiers reached the provider ({where}): {counts}"
+E   AssertionError: identifiers reached the provider (3 background task request(s)): {'Marta Vandenbroeck': 3, 'marta.vandenbroeck@example.org': 3, '+32 470 12 34 56': 0}
+E   assert not True
+E    +  where True = any(dict_values([3, 3, 0]))
+E    +    where dict_values([3, 3, 0]) = <built-in method values of dict object at 0x7f3cf468bbc0>()
+E    +      where <built-in method values of dict object at 0x7f3cf468bbc0> = {'+32 470 12 34 56': 0, 'Marta Vandenbroeck': 3, 'marta.vandenbroeck@example.org': 3}.values
+_ test_b7_a_shared_chat_does_not_show_passages_of_a_knowledge_base_the_reader_cannot_open _
+integration/privacy/test_shared_chat.py:72: in test_b7_a_shared_chat_does_not_show_passages_of_a_knowledge_base_the_reader_cannot_open
+    assert INTERVIEWEE_EMAIL not in json.dumps(view.json()), (
+E   AssertionError: Bob, who cannot open the knowledge base, can read its contact details in the shared chat
+E   assert 'marta.vande...@example.org' not in '{"id": "75f...sage": null}'
+E     
+E     'marta.vandenbroeck@example.org' is contained here:
+E     ?                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+======================== SKEPTIC VERIFICATION REQUIRED =========================
+These failures are HYPOTHESES, not verdicts. Each is a regression guard and may be a
+FALSE POSITIVE. Before reporting ANY of them as a real bug, run the skeptic pass below.
+Default to doubt: assume the issue is already handled until you prove otherwise.
+
+A failure is NOT a real bug if any of these hold — check them:
+  - Layer-handled: the test exercises the behavior through a shortcut production never
+    uses (e.g. it calls a function directly, but production routes through a wrapper that
+    coerces/validates/guards the input first). Trace the REAL call path and list every
+    layer between the entrypoint and the asserted code (wrappers, middleware, schema /
+    pydantic validation, decorators, coercion).
+  - Already fixed: a recent commit addresses it (git log / blame / grep the touched code).
+  - Test artifact: direct-call bypass, cross-test state pollution, or a missing
+    service / instance / env (not a code bug).
+  - Stale assumption: the source moved or was renamed and the test's premise no longer holds.
+
+For EACH failure, produce a verdict WITH evidence:
+  real            -> reproduced THROUGH the real production path  (file:line of the repro)
+  already-handled -> the layer or commit that handles it          (file:line / commit sha)
+  test-artifact   -> why the test's path is unreachable / what service or env it needs
+
+Report ONLY the 'real' survivors as bugs; annotate the rest with their evidence.
+If you cannot reproduce a failure through the real production path, it is NOT real.
+
+Verify each before reporting it as a bug:
+  [ ] integration/privacy/test_database.py::test_d3_deleting_a_chat_leaves_no_text_in_the_database_files
+  [ ] integration/privacy/test_database.py::test_d4_deleting_a_rated_chat_removes_its_rating_copy
+  [ ] integration/privacy/test_deletion.py::test_d1_deleting_a_file_leaves_no_text_in_the_vector_store
+  [ ] integration/privacy/test_deletion.py::test_d2_deleting_a_user_removes_their_file_chunks
+  [ ] integration/privacy/test_deletion.py::test_d2_deleting_a_user_removes_their_memory_vectors
+  [ ] integration/privacy/test_deletion.py::test_d2_deleting_a_user_removes_their_uploaded_files
+  [ ] integration/privacy/test_provider_payloads.py::test_b1_retrieved_passages_do_not_carry_identifiers_to_the_provider
+  [ ] integration/privacy/test_provider_payloads.py::test_b2_b4_uploaded_chunks_do_not_carry_identifiers_to_the_embedding_provider
+  [ ] integration/privacy/test_provider_payloads.py::test_b3_background_tasks_do_not_carry_the_chat_to_the_provider
+  [ ] integration/privacy/test_shared_chat.py::test_b7_a_shared_chat_does_not_show_passages_of_a_knowledge_base_the_reader_cannot_open
+==================== trace the real path; default to doubt =====================
+=========================== short test summary info ============================
+FAILED integration/privacy/test_database.py::test_d3_deleting_a_chat_leaves_no_text_in_the_database_files
+FAILED integration/privacy/test_database.py::test_d4_deleting_a_rated_chat_removes_its_rating_copy
+FAILED integration/privacy/test_deletion.py::test_d1_deleting_a_file_leaves_no_text_in_the_vector_store
+FAILED integration/privacy/test_deletion.py::test_d2_deleting_a_user_removes_their_file_chunks
+FAILED integration/privacy/test_deletion.py::test_d2_deleting_a_user_removes_their_memory_vectors
+FAILED integration/privacy/test_deletion.py::test_d2_deleting_a_user_removes_their_uploaded_files
+FAILED integration/privacy/test_provider_payloads.py::test_b1_retrieved_passages_do_not_carry_identifiers_to_the_provider
+FAILED integration/privacy/test_provider_payloads.py::test_b2_b4_uploaded_chunks_do_not_carry_identifiers_to_the_embedding_provider
+FAILED integration/privacy/test_provider_payloads.py::test_b3_background_tasks_do_not_carry_the_chat_to_the_provider
+FAILED integration/privacy/test_shared_chat.py::test_b7_a_shared_chat_does_not_show_passages_of_a_knowledge_base_the_reader_cannot_open
+============================= 10 failed in 17.21s ==============================
