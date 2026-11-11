@@ -27,6 +27,11 @@ The script clones the official suite next to the repo (`../owui-tests`) at the c
 suite's `integration/` folder and runs it against `backend/`. It does not touch Open WebUI.
 To test one branch's tests against the other branch's backend: `BACKEND=/path/to/other/backend bash pia/tests/run.sh`.
 
+**In Docker.** `bash pia/tests/run_tests_in_docker.sh` runs the same tests inside the official image
+`ghcr.io/open-webui/open-webui:v0.12.2` (Python 3.11.17, SQLite 3.40.1, `secure_delete = 1`) against the backend of the
+branch you are on; nothing is installed on your computer. Result on a team laptop, 11 Nov 2026: 10 failed on
+`pia/tests-only`, 10 passed on `pia/fixes`.
+
 ## Tests and findings
 | Test | Finding | What the test does | Fails on `tests-only` because | GDPR |
 |---|---|---|---|---|
@@ -53,6 +58,6 @@ The tests follow the official suite's own contract (`docs/regression-test-contra
 - **B1/B2/B3 pass on the fixed branch partly because the test setup writes the synthetic name into the filter's name list** (`conftest.py`). A name that is not on the list is not protected. E-mail addresses and phone numbers are found by pattern and need no list.
 - Some fix code is not exercised by any test: the sync OpenAI and Azure embedding paths, the Responses and Anthropic routes, and rating-copy removal in "delete all my chats". Undoing any of these leaves all ten tests green (mutation check, 11 Nov).
 - B7 covers retrieval from a knowledge base. A file stored on the chat message is readable through a share by design (`utils/access_control/files.py`), so it is not a leak.
-- D3 was reproduced on source builds (SQLite `secure_delete` off on a conda Python, on in the sandbox). The Docker image reports `secure_delete=1`; the full outcome in a container is a HYPOTHESIS until the tests are run there.
+- D3 depends on the SQLite build. It fails on the unfixed code on the sandbox build and in the official Docker image, where `secure_delete` is on by default: the text stays in the write-ahead file until a checkpoint (VERIFIED 11 Nov). On a conda Python with `secure_delete` off, the text also stays in the main file.
 - The suite's own boilerplate "SKEPTIC VERIFICATION" note appears after failures. We did that check: each failure was read, and every precondition (the data exists before the deletion, the document was retrieved, the colleague has no access) is asserted inside the test.
 - Version: the official suite follows Open WebUI's development branch. We pin it to the commit of 14 Oct so that it matches v0.12.2.
