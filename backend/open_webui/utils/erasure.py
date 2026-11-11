@@ -18,10 +18,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Optional
-
-from sqlalchemy import delete, select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from open_webui.internal.db import ASYNC_SQLALCHEMY_DATABASE_URL, async_engine, get_async_db_context
 from open_webui.models.feedbacks import Feedback
@@ -32,6 +28,8 @@ from open_webui.models.memories import Memories
 from open_webui.models.notes import Note
 from open_webui.retrieval.vector.async_client import ASYNC_VECTOR_DB_CLIENT
 from open_webui.storage.provider import Storage
+from sqlalchemy import delete, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 log = logging.getLogger(__name__)
 
@@ -66,7 +64,7 @@ async def _erase_file(file: FileModel, db: AsyncSession) -> None:
     await drop_collection(f'file-{file.id}')
 
 
-async def erase_user_data(user_id: str, db: Optional[AsyncSession] = None) -> None:
+async def erase_user_data(user_id: str, db: AsyncSession | None = None) -> None:
     """Remove what a deleted account leaves behind (D2).
 
     `Users.delete_user_by_id` removes the account, group memberships and chats. This removes the
@@ -87,7 +85,7 @@ async def erase_user_data(user_id: str, db: Optional[AsyncSession] = None) -> No
         await session.commit()
 
 
-async def strip_rating_copies(user_id: str, chat_ids: Optional[set[str]], db: Optional[AsyncSession] = None) -> int:
+async def strip_rating_copies(user_id: str, chat_ids: set[str] | None, db: AsyncSession | None = None) -> int:
     """Drop the chat copies stored with a user's answer ratings (D4).
 
     `chat_ids=None` means every chat of the user (used when all chats are deleted). The rating

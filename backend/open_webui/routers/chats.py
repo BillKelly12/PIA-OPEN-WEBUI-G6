@@ -46,9 +46,9 @@ from open_webui.utils.chat_fork import build_fork_history
 from open_webui.utils.context_compaction import compact_chat_branch, get_chat_context_usage
 from open_webui.utils.erasure import scrub_deleted_text, strip_rating_copies
 from open_webui.utils.json_codec import JSONCodec
-from open_webui.utils.shared_sources import withhold_unreadable_sources
 from open_webui.utils.misc import get_message_list
 from open_webui.utils.models import get_all_models
+from open_webui.utils.shared_sources import withhold_unreadable_sources
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 

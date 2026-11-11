@@ -31,21 +31,45 @@ log = logging.getLogger(__name__)
 EMAIL = re.compile(r'(?<![\w.+-])[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}')
 # International numbers (+32 470 12 34 56, 0032 ...), and national numbers that use spaces,
 # dashes or slashes (0470 12 34 56). Dotted numbers are left alone so dates such as 07.11.2026
-# are not mistaken for phones. A match must hold 8 to 15 digits.
+# are not mistaken for phones, and so are numbers shaped like a date (07/11/2026, see DATE).
+# A match must hold 8 to 15 digits.
 PHONE = re.compile(r'(?<![\w+])(?:(?:\+|00)\d[\d \t().\-/]{6,20}\d|0\d{1,3}[ \t\-/]\d[\d \t\-/]{5,14}\d)(?!\w)')
 
+# Day/month/year written with spaces, dashes or slashes. It has the digits of a phone number,
+# so it is checked separately and left unchanged.
+DATE = re.compile(r'\d{1,2}[ /\-]\d{1,2}[ /\-]\d{2,4}')
+
 # Keys whose values are not free text and must reach the provider unchanged.
-_SKIP_KEYS = {'model', 'tools', 'tool_choice', 'response_format', 'stream_options', 'image_url', 'url', 'id', 'tool_call_id', 'role', 'type'}
+_SKIP_KEYS = {
+    'model',
+    'tools',
+    'tool_choice',
+    'response_format',
+    'stream_options',
+    'image_url',
+    'url',
+    'id',
+    'tool_call_id',
+    'role',
+    'type',
+}
 
 _register_cache: tuple[float, list[re.Pattern]] | None = None
+_warned_no_register = False
 
 
 def _register_patterns() -> list[re.Pattern]:
     """Names from the participant register, longest first, re-read when the file changes."""
-    global _register_cache
+    global _register_cache, _warned_no_register
     try:
         mtime = PROVIDER_REDACTION_REGISTER.stat().st_mtime
     except OSError:
+        if not _warned_no_register:
+            _warned_no_register = True
+            log.warning(
+                'redaction: no participant register at %s, so only e-mail addresses and phone numbers are replaced',
+                PROVIDER_REDACTION_REGISTER,
+            )
         return []
     if _register_cache and _register_cache[0] == mtime:
         return _register_cache[1]
@@ -54,7 +78,10 @@ def _register_patterns() -> list[re.Pattern]:
         line = line.strip()
         if line and not line.startswith('#'):
             names.append(line)
-    patterns = [re.compile(r'(?<!\w)' + re.escape(n) + r'(?!\w)', re.IGNORECASE) for n in sorted(set(names), key=len, reverse=True)]
+    patterns = [
+        re.compile(r'(?<!\w)' + re.escape(n) + r'(?!\w)', re.IGNORECASE)
+        for n in sorted(set(names), key=len, reverse=True)
+    ]
     _register_cache = (mtime, patterns)
     return patterns
 
@@ -83,7 +110,9 @@ class Redactor:
 
         def phone(m: re.Match) -> str:
             digits = sum(ch.isdigit() for ch in m.group(0))
-            return self._placeholder('PHONE', m.group(0)) if 8 <= digits <= 15 else m.group(0)
+            if DATE.fullmatch(m.group(0)) or not 8 <= digits <= 15:
+                return m.group(0)
+            return self._placeholder('PHONE', m.group(0))
 
         return PHONE.sub(phone, value)
 

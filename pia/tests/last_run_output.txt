@@ -1,9 +1,9 @@
 ============================= test session starts ==============================
 platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.7.0 -- ../owui-tests/venv/bin/python
-metadata: {'Python': '3.12.3', 'Platform': 'Linux-6.18.44-fc-v338-x86_64-with-glibc2.39', 'Packages': {'pytest': '8.4.2', 'pluggy': '1.7.0'}, 'Plugins': {'playwright': '0.10.0', 'html': '4.2.0', 'split': '0.11.0', 'metadata': '3.1.1', 'allure-pytest': '2.16.2', 'langsmith': '0.14.17', 'anyio': '4.16.0', 'platformdirs': '4.14.5', 'asyncio': '1.4.1.post1'}, 'JAVA_HOME': '/usr/lib/jvm/java-21-openjdk-amd64'}
+metadata: {'Python': '3.12.3', 'Platform': 'Linux-6.18.44-fc-v378-x86_64-with-glibc2.39', 'Packages': {'pytest': '8.4.2', 'pluggy': '1.7.0'}, 'Plugins': {'playwright': '0.10.0', 'html': '4.2.0', 'platformdirs': '4.14.0', 'split': '0.11.0', 'metadata': '3.1.1', 'langsmith': '0.14.16', 'asyncio': '1.4.1', 'allure-pytest': '2.16.2', 'anyio': '4.15.1'}, 'JAVA_HOME': '/usr/lib/jvm/java-21-openjdk-amd64'}
 rootdir: ../owui-tests/suite
 configfile: pyproject.toml
-plugins: playwright-0.10.0, html-4.2.0, split-0.11.0, metadata-3.1.1, allure-pytest-2.16.2, langsmith-0.14.17, anyio-4.16.0, platformdirs-4.14.5, asyncio-1.4.1.post1
+plugins: playwright-0.10.0, html-4.2.0, platformdirs-4.14.0, split-0.11.0, metadata-3.1.1, langsmith-0.14.16, asyncio-1.4.1, allure-pytest-2.16.2, anyio-4.15.1
 asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
 collecting ... collected 10 items
 
@@ -18,4 +18,4 @@ integration/privacy/test_provider_payloads.py::test_b2_b4_uploaded_chunks_do_not
 integration/privacy/test_provider_payloads.py::test_b3_background_tasks_do_not_carry_the_chat_to_the_provider PASSED [ 90%]
 integration/privacy/test_shared_chat.py::test_b7_a_shared_chat_does_not_show_passages_of_a_knowledge_base_the_reader_cannot_open PASSED [100%]
 
-============================= 10 passed in 16.19s ==============================
+============================= 10 passed in 15.18s ==============================

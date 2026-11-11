@@ -66,6 +66,7 @@ def test_b1_retrieved_passages_do_not_carry_identifiers_to_the_provider(instance
         )
 
     assert message.get("sources"), "precondition failed: the document was not retrieved for the turn"
+    assert upstream.chat_requests(), "precondition failed: no chat request reached the provider"
     _no_leak(leaked(upstream.chat_requests()), "chat completions")
 
 

@@ -15,7 +15,9 @@ import httpx
 INTERVIEWEE_NAME = "Marta Vandenbroeck"
 INTERVIEWEE_EMAIL = "marta.vandenbroeck@example.org"
 INTERVIEWEE_PHONE = "+32 470 12 34 56"
-IDENTIFIERS = (INTERVIEWEE_NAME, INTERVIEWEE_EMAIL, INTERVIEWEE_PHONE)
+# The surname alone is also checked, so a fix that only changes how the full name is written still fails.
+INTERVIEWEE_SURNAME = "Vandenbroeck"
+IDENTIFIERS = (INTERVIEWEE_NAME, INTERVIEWEE_EMAIL, INTERVIEWEE_PHONE, INTERVIEWEE_SURNAME)
 
 TRANSCRIPT = (
     f"Interview 07. Participant: {INTERVIEWEE_NAME}, PhD student, reachable at "
