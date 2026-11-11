@@ -44,9 +44,7 @@ from open_webui.utils.access_control.folders import has_folder_write_access
 from open_webui.utils.auth import bearer_security, get_admin_user, get_current_user, get_verified_user
 from open_webui.utils.chat_fork import build_fork_history
 from open_webui.utils.context_compaction import compact_chat_branch, get_chat_context_usage
-from open_webui.utils.erasure import scrub_deleted_text, strip_rating_copies
 from open_webui.utils.json_codec import JSONCodec
-from open_webui.utils.shared_sources import withhold_unreadable_sources
 from open_webui.utils.misc import get_message_list
 from open_webui.utils.models import get_all_models
 from pydantic import BaseModel
@@ -159,8 +157,6 @@ async def shared_chat_response(chat, user=None, db=None):
                 authors[author_id] = {'id': author_id, 'name': author['name']}
         if user is None or (message.get('user_id') or chat.user_id) != user.id:
             message.pop('meta', None)
-    # Group 6 PIA (B7): a reader sees only the retrieved passages of sources they may open.
-    await withhold_unreadable_sources(messages, chat.user_id, user, db=db)
     missing_ids = {message['user_id'] for message in messages if message.get('role') == 'user'} - authors.keys()
     if missing_ids:
         for author in await Users.get_users_by_user_ids(list(missing_ids), db=db):
@@ -769,9 +765,6 @@ async def delete_all_user_chats(
     result = await Chats.delete_chats_by_user_id(user.id, db=db)
     if result:
         await Chats.delete_orphan_tags_for_user(tag_ids, user.id, db=db)
-        # PIA D4 and D3, as for a single chat.
-        await strip_rating_copies(user.id, None, db=db)
-        await scrub_deleted_text()
         await publish_event(
             request,
             EVENTS.CHAT_DELETED_ALL,
@@ -1704,9 +1697,6 @@ async def delete_chat_by_id(
         result = await Chats.delete_chat_by_id_and_user_id(id, user.id, db=db)
 
     if result:
-        # PIA D4: drop the chat copy stored with the owner's ratings; D3: clear the write-ahead file.
-        await strip_rating_copies(chat.user_id, {id}, db=db)
-        await scrub_deleted_text()
         await publish_event(
             request,
             EVENTS.CHAT_DELETED,

@@ -44,7 +44,6 @@ from open_webui.routers.audio import transcribe
 from open_webui.routers.retrieval import ProcessFileForm, process_file
 from open_webui.storage.provider import Storage
 from open_webui.utils.auth import get_admin_user, get_verified_user
-from open_webui.utils.erasure import drop_collection, scrub_deleted_text
 from open_webui.utils.misc import strict_match_mime_type
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -1051,9 +1050,7 @@ async def delete_file_by_id(
         if result:
             try:
                 await asyncio.to_thread(Storage.delete_file, file.path)
-                # PIA D1: delete(collection_name=...) without ids or a filter removed nothing.
-                await drop_collection(f'file-{id}')
-                await scrub_deleted_text()
+                await ASYNC_VECTOR_DB_CLIENT.delete(collection_name=f'file-{id}')
             except Exception as e:
                 log.exception(e)
                 log.error('Error deleting files')

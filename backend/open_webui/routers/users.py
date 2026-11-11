@@ -15,7 +15,6 @@ from open_webui.events import EVENTS, publish_event
 from open_webui.env import ENABLE_PROFILE_IMAGE_URL_FORWARDING, PROFILE_IMAGE_ALLOWED_MIME_TYPES, STATIC_DIR
 from open_webui.internal.db import get_async_session
 from open_webui.models.auths import Auths
-from open_webui.utils.erasure import erase_user_data, scrub_deleted_text
 from open_webui.models.config import Config
 from open_webui.models.chat_messages import ChatMessages
 from open_webui.models.chats import Chats
@@ -1081,12 +1080,9 @@ async def delete_user_by_id(
         )
 
     if user.id != user_id:
-        # PIA D2: remove the files, memories, notes, folders and ratings the account leaves behind.
-        await erase_user_data(user_id, db=db)
         result = await Auths.delete_auth_by_id(user_id, db=db)
 
         if result:
-            await scrub_deleted_text()  # PIA D3
             await publish_event(
                 request,
                 EVENTS.USER_DELETED,

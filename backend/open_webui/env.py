@@ -357,20 +357,6 @@ DATABASE_SQLITE_PRAGMA_MMAP_SIZE = os.getenv('DATABASE_SQLITE_PRAGMA_MMAP_SIZE',
 # truncated.  67108864 ≈ 64 MB.  Set to -1 for no limit (SQLite default).
 DATABASE_SQLITE_PRAGMA_JOURNAL_SIZE_LIMIT = os.getenv('DATABASE_SQLITE_PRAGMA_JOURNAL_SIZE_LIMIT', '67108864')
 
-# PRAGMA secure_delete: ON overwrites deleted content with zeros, so text a user deleted
-# cannot be read back from the database file's free pages (GDPR Art. 17, 5(1)(e)).
-# Valid values: ON, OFF, FAST. Group 6 PIA fix for finding D3.
-DATABASE_SQLITE_PRAGMA_SECURE_DELETE = os.getenv('DATABASE_SQLITE_PRAGMA_SECURE_DELETE', 'ON')
-
-# Pseudonymise identifiers before a request leaves for an OpenAI-compatible provider
-# (chat completions, background tasks, embeddings). E-mail addresses and phone numbers are
-# found by pattern; names are taken from a register the administrator keeps, one per line.
-# Group 6 PIA fix for findings B1, B2/B4 and B3 (GDPR Art. 5(1)(c), 25(2)).
-ENABLE_PROVIDER_REDACTION = os.getenv('ENABLE_PROVIDER_REDACTION', 'True').lower() == 'true'
-PROVIDER_REDACTION_REGISTER = Path(
-    os.getenv('PROVIDER_REDACTION_REGISTER', str(DATA_DIR / 'privacy' / 'participants.txt'))
-)
-
 # Seconds between presence writes per user per worker; keep under the 180s active-user window. 0 disables.
 try:
     DATABASE_USER_ACTIVE_STATUS_UPDATE_INTERVAL = float(os.getenv('DATABASE_USER_ACTIVE_STATUS_UPDATE_INTERVAL', '60'))

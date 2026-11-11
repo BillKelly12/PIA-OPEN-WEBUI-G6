@@ -56,7 +56,6 @@ from open_webui.utils.access_control.files import get_owner_accessible_folder_fi
 from open_webui.utils.access_control.folders import has_folder_access
 from open_webui.utils.headers import get_json_bearer_headers, include_user_info_headers
 from open_webui.utils.misc import get_content_from_message, get_message_list
-from open_webui.utils.redaction import redact_texts
 
 log = logging.getLogger(__name__)
 
@@ -892,7 +891,7 @@ def generate_openai_batch_embeddings(
     user: UserModel = None,
 ) -> list[list[float]]:
     log.debug('generate_openai_batch_embeddings:model %s batch size: %s', model, len(texts))
-    json_data = {'input': redact_texts(texts), 'model': model}  # Group 6 PIA (B2/B4)
+    json_data = {'input': texts, 'model': model}
     if isinstance(RAG_EMBEDDING_PREFIX_FIELD_NAME, str) and isinstance(prefix, str):
         json_data[RAG_EMBEDDING_PREFIX_FIELD_NAME] = prefix
 
@@ -922,7 +921,7 @@ async def agenerate_openai_batch_embeddings(
     user: UserModel = None,
 ) -> list[list[float]]:
     log.debug('agenerate_openai_batch_embeddings:model %s batch size: %s', model, len(texts))
-    form_data = {'input': redact_texts(texts), 'model': model}  # Group 6 PIA (B2/B4)
+    form_data = {'input': texts, 'model': model}
     if isinstance(RAG_EMBEDDING_PREFIX_FIELD_NAME, str) and isinstance(prefix, str):
         form_data[RAG_EMBEDDING_PREFIX_FIELD_NAME] = prefix
 
@@ -957,7 +956,7 @@ def generate_azure_openai_batch_embeddings(
     user: UserModel = None,
 ) -> list[list[float]]:
     log.debug('generate_azure_openai_batch_embeddings:deployment %s batch size: %s', model, len(texts))
-    json_data = {'input': redact_texts(texts)}  # Group 6 PIA (B2/B4)
+    json_data = {'input': texts}
     if isinstance(RAG_EMBEDDING_PREFIX_FIELD_NAME, str) and isinstance(prefix, str):
         json_data[RAG_EMBEDDING_PREFIX_FIELD_NAME] = prefix
 
@@ -999,7 +998,7 @@ async def agenerate_azure_openai_batch_embeddings(
     user: UserModel = None,
 ) -> list[list[float]]:
     log.debug('agenerate_azure_openai_batch_embeddings:deployment %s batch size: %s', model, len(texts))
-    form_data = {'input': redact_texts(texts)}  # Group 6 PIA (B2/B4)
+    form_data = {'input': texts}
     if isinstance(RAG_EMBEDDING_PREFIX_FIELD_NAME, str) and isinstance(prefix, str):
         form_data[RAG_EMBEDDING_PREFIX_FIELD_NAME] = prefix
 

@@ -42,7 +42,6 @@ from open_webui.utils.anthropic import ANTHROPIC_VERSION, get_anthropic_models, 
 from open_webui.utils.auth import get_admin_user, get_verified_user
 from open_webui.utils.headers import get_headers_and_cookies, include_user_info_headers
 from open_webui.utils.json_codec import JSONCodec
-from open_webui.utils.redaction import redact_payload
 from open_webui.utils.misc import convert_logit_bias_input_to_json, get_provider_function
 from open_webui.utils.model_ids import strip_provider_model_prefix
 from open_webui.utils.payload import (
@@ -406,8 +405,7 @@ async def get_anthropic_request_target(request: Request, form_data: dict, user: 
             headers.pop('Authorization', None)
             headers.setdefault('x-api-key', key)
 
-    # Group 6 PIA (B1): the native Anthropic routes (messages, token count) get the same filter.
-    return requested_model, redact_payload(payload), url, key, headers, cookies
+    return requested_model, payload, url, key, headers, cookies
 
 
 async def count_anthropic_tokens(request: Request, form_data: dict, user: UserModel) -> int:
@@ -1575,8 +1573,6 @@ async def generate_chat_completion(
     if not is_streaming_request:
         payload.pop('stream_options', None)
 
-    # Group 6 PIA (B1, B3): pseudonymise identifiers before the chat leaves for the provider.
-    payload = redact_payload(payload)
     payload = JSONCodec.dumps(payload)
 
     r = None
@@ -1699,8 +1695,8 @@ async def embeddings(request: Request, form_data: dict, user):
         dict: OpenAI-compatible embeddings response.
     """
     idx = 0
-    # Prepare payload/body (Group 6 PIA, B2/B4: pseudonymise identifiers first)
-    body = JSONCodec.dumps(redact_payload(form_data))
+    # Prepare payload/body
+    body = JSONCodec.dumps(form_data)
     # Find correct backend url/key based on model
     model_id = form_data.get('model')
     # Check if model is already in app state cache to avoid expensive get_all_models() call
@@ -1844,7 +1840,7 @@ async def responses(
     url, key, api_config = await get_openai_connection(idx)
 
     payload['model'] = strip_provider_model_prefix(payload['model'], api_config.get('prefix_id'))
-    body = JSONCodec.dumps(redact_payload(payload))  # Group 6 PIA (B1)
+    body = JSONCodec.dumps(payload)
 
     r = None
     streaming = False
