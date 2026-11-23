@@ -59,6 +59,27 @@ def stored_chunks(instance, collection: str) -> list[str]:
     return found.get(include=["documents"])["documents"] or []
 
 
+def stored_vectors(instance, collection: str) -> int:
+    """How many embedding vectors (the numeric fingerprints of the text) the collection still holds.
+
+    Read straight from the Chroma store on disk, like `stored_chunks`. A vector is
+    personal data in its own right: published research shows text can be rebuilt from it.
+    """
+    import chromadb
+    from chromadb.config import Settings
+
+    client = chromadb.PersistentClient(
+        path=str(instance.data_dir / "vector_db"),
+        settings=Settings(anonymized_telemetry=False, allow_reset=False),
+    )
+    try:
+        found = client.get_collection(collection)
+    except Exception:
+        return 0
+    embeddings = found.get(include=["embeddings"])["embeddings"]
+    return 0 if embeddings is None else len(embeddings)
+
+
 def stored_copies(instance, file_id: str) -> list[str]:
     """Files in the uploads folder that are the stored copy of this file (named `<id>_<name>`)."""
     folder = instance.data_dir / "uploads"

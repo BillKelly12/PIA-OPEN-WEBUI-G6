@@ -22,6 +22,7 @@ from .pia_support import (
     TRANSCRIPT,
     stored_chunks,
     stored_copies,
+    stored_vectors,
     upload,
 )
 
@@ -40,12 +41,15 @@ def test_d1_deleting_a_file_leaves_no_text_in_the_vector_store(instance, make_us
         assert any(INTERVIEWEE_EMAIL in chunk for chunk in before), (
             "precondition failed: the uploaded text is not in the vector store at all"
         )
+        assert stored_vectors(instance, collection) > 0, "precondition failed: no embedding vectors were stored"
 
         deleted = client.delete(f"/api/v1/files/{file_id}")
         assert deleted.status_code == 200, deleted.text
 
     left = stored_chunks(instance, collection)
     assert not left, f"{len(left)} chunk(s) of the deleted file are still stored, e.g. {left[0][:70]!r}"
+    vectors = stored_vectors(instance, collection)
+    assert vectors == 0, f"{vectors} embedding vector(s) of the deleted file are still stored"
 
 
 # ------------------------------------------------------------------------------------- D2
@@ -65,7 +69,9 @@ def erased_account(instance, admin, make_user):
     memory_collection = f"user-memory-{person.id}"
     file_collection = f"file-{file_id}"
     assert stored_chunks(instance, file_collection), "precondition failed: no file chunks"
+    assert stored_vectors(instance, file_collection) > 0, "precondition failed: no file embedding vectors"
     assert stored_chunks(instance, memory_collection), "precondition failed: no memory vectors"
+    assert stored_vectors(instance, memory_collection) > 0, "precondition failed: no memory embedding vectors"
 
     with admin.client() as client:
         gone = client.delete(f"/api/v1/users/{person.id}")
@@ -76,11 +82,15 @@ def erased_account(instance, admin, make_user):
 def test_d2_deleting_a_user_removes_their_file_chunks(instance, erased_account):
     left = stored_chunks(instance, erased_account["file_collection"])
     assert not left, f"{len(left)} chunk(s) of the deleted user's file are still stored"
+    vectors = stored_vectors(instance, erased_account["file_collection"])
+    assert vectors == 0, f"{vectors} embedding vector(s) of the deleted user's file are still stored"
 
 
 def test_d2_deleting_a_user_removes_their_memory_vectors(instance, erased_account):
     left = stored_chunks(instance, erased_account["memory_collection"])
-    assert not left, f"{len(left)} memory vector(s) of the deleted user are still stored"
+    assert not left, f"{len(left)} memory text(s) of the deleted user are still stored"
+    vectors = stored_vectors(instance, erased_account["memory_collection"])
+    assert vectors == 0, f"{vectors} memory embedding vector(s) of the deleted user are still stored"
 
 
 def test_d2_deleting_a_user_removes_their_uploaded_files(instance, admin, erased_account):
