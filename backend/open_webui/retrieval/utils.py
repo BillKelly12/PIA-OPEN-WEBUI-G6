@@ -892,7 +892,7 @@ def generate_openai_batch_embeddings(
     user: UserModel = None,
 ) -> list[list[float]]:
     log.debug('generate_openai_batch_embeddings:model %s batch size: %s', model, len(texts))
-    json_data = {'input': redact_texts(texts), 'model': model}  # Group 6 PIA (B2/B4)
+    json_data = {'input': redact_texts(texts), 'model': model}  # Group 6 PIA (I2)
     if isinstance(RAG_EMBEDDING_PREFIX_FIELD_NAME, str) and isinstance(prefix, str):
         json_data[RAG_EMBEDDING_PREFIX_FIELD_NAME] = prefix
 
@@ -922,7 +922,7 @@ async def agenerate_openai_batch_embeddings(
     user: UserModel = None,
 ) -> list[list[float]]:
     log.debug('agenerate_openai_batch_embeddings:model %s batch size: %s', model, len(texts))
-    form_data = {'input': redact_texts(texts), 'model': model}  # Group 6 PIA (B2/B4)
+    form_data = {'input': redact_texts(texts), 'model': model}  # Group 6 PIA (I2)
     if isinstance(RAG_EMBEDDING_PREFIX_FIELD_NAME, str) and isinstance(prefix, str):
         form_data[RAG_EMBEDDING_PREFIX_FIELD_NAME] = prefix
 
@@ -957,7 +957,7 @@ def generate_azure_openai_batch_embeddings(
     user: UserModel = None,
 ) -> list[list[float]]:
     log.debug('generate_azure_openai_batch_embeddings:deployment %s batch size: %s', model, len(texts))
-    json_data = {'input': redact_texts(texts)}  # Group 6 PIA (B2/B4)
+    json_data = {'input': redact_texts(texts)}  # Group 6 PIA (I2)
     if isinstance(RAG_EMBEDDING_PREFIX_FIELD_NAME, str) and isinstance(prefix, str):
         json_data[RAG_EMBEDDING_PREFIX_FIELD_NAME] = prefix
 
@@ -999,7 +999,7 @@ async def agenerate_azure_openai_batch_embeddings(
     user: UserModel = None,
 ) -> list[list[float]]:
     log.debug('agenerate_azure_openai_batch_embeddings:deployment %s batch size: %s', model, len(texts))
-    form_data = {'input': redact_texts(texts)}  # Group 6 PIA (B2/B4)
+    form_data = {'input': redact_texts(texts)}  # Group 6 PIA (I2)
     if isinstance(RAG_EMBEDDING_PREFIX_FIELD_NAME, str) and isinstance(prefix, str):
         form_data[RAG_EMBEDDING_PREFIX_FIELD_NAME] = prefix
 

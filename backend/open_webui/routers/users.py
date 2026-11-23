@@ -1081,12 +1081,12 @@ async def delete_user_by_id(
         )
 
     if user.id != user_id:
-        # PIA D2: remove the files, memories, notes, folders and ratings the account leaves behind.
+        # PIA I6: remove the files, memories, notes, folders and ratings the account leaves behind.
         await erase_user_data(user_id, db=db)
         result = await Auths.delete_auth_by_id(user_id, db=db)
 
         if result:
-            await scrub_deleted_text()  # PIA D3
+            await scrub_deleted_text()  # PIA I7
             await publish_event(
                 request,
                 EVENTS.USER_DELETED,

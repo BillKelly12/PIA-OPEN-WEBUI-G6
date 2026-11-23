@@ -159,7 +159,7 @@ async def shared_chat_response(chat, user=None, db=None):
                 authors[author_id] = {'id': author_id, 'name': author['name']}
         if user is None or (message.get('user_id') or chat.user_id) != user.id:
             message.pop('meta', None)
-    # Group 6 PIA (B7): a reader sees only the retrieved passages of sources they may open.
+    # Group 6 PIA (I4): a reader sees only the retrieved passages of sources they may open.
     await withhold_unreadable_sources(messages, chat.user_id, user, db=db)
     missing_ids = {message['user_id'] for message in messages if message.get('role') == 'user'} - authors.keys()
     if missing_ids:
@@ -769,7 +769,7 @@ async def delete_all_user_chats(
     result = await Chats.delete_chats_by_user_id(user.id, db=db)
     if result:
         await Chats.delete_orphan_tags_for_user(tag_ids, user.id, db=db)
-        # PIA D4 and D3, as for a single chat.
+        # PIA I8 and I7, as for a single chat.
         await strip_rating_copies(user.id, None, db=db)
         await scrub_deleted_text()
         await publish_event(
@@ -1704,7 +1704,7 @@ async def delete_chat_by_id(
         result = await Chats.delete_chat_by_id_and_user_id(id, user.id, db=db)
 
     if result:
-        # PIA D4: drop the chat copy stored with the owner's ratings; D3: clear the write-ahead file.
+        # PIA I8: drop the chat copy stored with the owner's ratings; I7: clear the write-ahead file.
         await strip_rating_copies(chat.user_id, {id}, db=db)
         await scrub_deleted_text()
         await publish_event(

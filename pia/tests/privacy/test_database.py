@@ -1,13 +1,13 @@
-"""Privacy finding D3 and D4: a deleted chat must not survive in the database.
+"""Privacy finding I7 and I8: a deleted chat must not survive in the database.
 
 GDPR Art. 17 (erasure), Art. 5(1)(e) (storage limitation) and Art. 5(1)(f) (confidentiality).
-This is issue I4 of the report. The data subjects are the people a chat talks about
+These are issues I7 and I8 of the report. The data subjects are the people a chat talks about
 (interviewees, co-authors), not only the student who deletes it.
 
-D3  A user deletes a chat. The application rows go, but SQLite keeps the deleted text in the
+I7  A user deletes a chat. The application rows go, but SQLite keeps the deleted text in the
     database's free pages and in its write-ahead file (`webui.db-wal`), where anyone who copies
     the data folder or a backup can read it without passing the application's access checks.
-D4  A user rates an answer, then deletes the chat. The browser sends a full copy of the chat with
+I8  A user rates an answer, then deletes the chat. The browser sends a full copy of the chat with
     every rating (`ResponseMessage.svelte`, `snapshot: {chat}`), and deleting the chat leaves
     that copy in the `feedback` table, where the admin's export still returns it.
 
@@ -61,10 +61,10 @@ def _chat_about(client, marker: str) -> tuple[str, str, dict]:
     return chat_id, answer_id, stored.json()["chat"]
 
 
-# ------------------------------------------------------------------------------------- D3
+# ------------------------------------------------------------------------------------- I7
 
 
-def test_d3_deleting_a_chat_leaves_no_text_in_the_database_files(instance, make_user):
+def test_i7_deleting_a_chat_leaves_no_text_in_the_database_files(instance, make_user):
     marker = _marker()
     owner = make_user()
     with owner.client() as client:
@@ -83,10 +83,10 @@ def test_d3_deleting_a_chat_leaves_no_text_in_the_database_files(instance, make_
     assert not left, f"the deleted chat's text is still readable in: {left}"
 
 
-# ------------------------------------------------------------------------------------- D4
+# ------------------------------------------------------------------------------------- I8
 
 
-def test_d4_deleting_a_rated_chat_removes_its_rating_copy(instance, admin, make_user):
+def test_i8_deleting_a_rated_chat_removes_its_rating_copy(instance, admin, make_user):
     marker = _marker()
     owner = make_user()
     with owner.client() as client:

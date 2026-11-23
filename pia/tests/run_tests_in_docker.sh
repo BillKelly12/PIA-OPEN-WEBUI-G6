@@ -4,7 +4,7 @@
 #
 # Usage, from the root of your clone, on the branch you want to test:
 #     bash pia/tests/run_tests_in_docker.sh           # all ten tests
-#     bash pia/tests/run_tests_in_docker.sh -v -k d3  # extra pytest arguments
+#     bash pia/tests/run_tests_in_docker.sh -v -k i7  # extra pytest arguments
 #
 # Nothing is installed on your computer: the Python packages go into a throw-away container.
 # The first run downloads packages (a few minutes); the image itself is already on your machine.

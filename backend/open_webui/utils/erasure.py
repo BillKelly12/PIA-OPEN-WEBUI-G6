@@ -1,14 +1,14 @@
-"""Complete erasure of deleted data (Group 6 PIA, findings D1-D4).
+"""Complete erasure of deleted data (Group 6 PIA, findings I5-I8).
 
 GDPR Art. 17 (erasure) and Art. 5(1)(e) (storage limitation). When a user deletes a file or a
 chat, or an admin deletes an account, Open WebUI v0.12.2 removed the main database rows but left
 copies elsewhere. The helpers below remove those copies:
 
-D1  a deleted file's text chunks in the vector store          -> drop_collection()
-D2  a deleted user's files, memories, notes, folders, ratings -> erase_user_data()
-D3  deleted text in SQLite's write-ahead file                  -> scrub_deleted_text()
+I5  a deleted file's text chunks in the vector store          -> drop_collection()
+I6  a deleted user's files, memories, notes, folders, ratings -> erase_user_data()
+I7  deleted text in SQLite's write-ahead file                  -> scrub_deleted_text()
     (free pages inside the database file are zeroed by PRAGMA secure_delete, see internal/db.py)
-D4  the chat copy saved with every answer rating               -> strip_rating_copies()
+I8  the chat copy saved with every answer rating               -> strip_rating_copies()
 
 Each helper logs and continues on failure, so a cleanup problem never blocks the deletion the
 user asked for.
@@ -35,7 +35,7 @@ log = logging.getLogger(__name__)
 
 
 async def drop_collection(collection_name: str) -> None:
-    """Remove a whole vector collection (D1).
+    """Remove a whole vector collection (I5).
 
     The original code called `ASYNC_VECTOR_DB_CLIENT.delete(collection_name=...)` with no ids
     and no filter, which the Chroma client treats as "delete nothing".
@@ -65,7 +65,7 @@ async def _erase_file(file: FileModel, db: AsyncSession) -> None:
 
 
 async def erase_user_data(user_id: str, db: AsyncSession | None = None) -> None:
-    """Remove what a deleted account leaves behind (D2).
+    """Remove what a deleted account leaves behind (I6).
 
     `Users.delete_user_by_id` removes the account, group memberships and chats. This removes the
     rest: uploaded files (row, stored copy, extracted text, chunks), memories and their vectors,
@@ -86,7 +86,7 @@ async def erase_user_data(user_id: str, db: AsyncSession | None = None) -> None:
 
 
 async def strip_rating_copies(user_id: str, chat_ids: set[str] | None, db: AsyncSession | None = None) -> int:
-    """Drop the chat copies stored with a user's answer ratings (D4).
+    """Drop the chat copies stored with a user's answer ratings (I8).
 
     `chat_ids=None` means every chat of the user (used when all chats are deleted). The rating
     itself (thumbs up or down, model id) is kept, so the model leaderboard still works; only the
@@ -108,7 +108,7 @@ async def strip_rating_copies(user_id: str, chat_ids: set[str] | None, db: Async
 
 
 async def scrub_deleted_text() -> None:
-    """Make deleted rows unreadable in SQLite's write-ahead file (D3).
+    """Make deleted rows unreadable in SQLite's write-ahead file (I7).
 
     With WAL on (the default), the old page versions that still hold the deleted text stay in
     `webui.db-wal` until a checkpoint. A TRUNCATE checkpoint copies the current (zeroed, thanks

@@ -1,7 +1,7 @@
 """Set-up shared by the Group 6 privacy tests.
 
 The lab keeps a register of its interview participants (it needs one anyway for consent forms
-and withdrawal requests). The identifier filter added for B1, B2/B4 and B3 reads that register
+and withdrawal requests). The identifier filter added for I1, I2 and I3 reads that register
 from DATA_DIR/privacy/participants.txt to know which names to replace. This fixture writes the
 register for the synthetic participant used in the tests, as the lab's administrator would.
 E-mail addresses and phone numbers need no register: they are found by pattern.

@@ -1051,7 +1051,7 @@ async def delete_file_by_id(
         if result:
             try:
                 await asyncio.to_thread(Storage.delete_file, file.path)
-                # PIA D1: delete(collection_name=...) without ids or a filter removed nothing.
+                # PIA I5: delete(collection_name=...) without ids or a filter removed nothing.
                 await drop_collection(f'file-{id}')
                 await scrub_deleted_text()
             except Exception as e:

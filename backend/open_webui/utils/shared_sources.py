@@ -1,4 +1,4 @@
-"""Withhold retrieved passages a shared-chat reader may not open (Group 6 PIA, finding B7).
+"""Withhold retrieved passages a shared-chat reader may not open (Group 6 PIA, finding I4).
 
 When a chat used a knowledge base, every assistant message stores the retrieved passages in
 `sources`. Sharing the chat showed those passages to every reader, also to colleagues who have no

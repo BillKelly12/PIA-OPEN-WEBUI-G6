@@ -1,8 +1,8 @@
 """Pseudonymise identifiers before content leaves for an external provider (Group 6 PIA).
 
-Findings B1, B2/B4 and B3: when the lab connects an OpenAI-compatible provider, Open WebUI sends
-the whole chat with its retrieved passages (B1), every chunk of an uploaded document for
-embedding (B2/B4) and the chat again for titles, tags and follow-ups (B3). Interviewees' names,
+Findings I1, I2 and I3: when the lab connects an OpenAI-compatible provider, Open WebUI sends
+the whole chat with its retrieved passages (I1), every chunk of an uploaded document for
+embedding (I2) and the chat again for titles, tags and follow-ups (I3). Interviewees' names,
 e-mail addresses and phone numbers in those texts reach a company they never chose.
 
 Every such request now passes through `Redactor` first. It replaces

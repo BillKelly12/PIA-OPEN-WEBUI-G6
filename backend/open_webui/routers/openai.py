@@ -406,7 +406,7 @@ async def get_anthropic_request_target(request: Request, form_data: dict, user: 
             headers.pop('Authorization', None)
             headers.setdefault('x-api-key', key)
 
-    # Group 6 PIA (B1): the native Anthropic routes (messages, token count) get the same filter.
+    # Group 6 PIA (I1): the native Anthropic routes (messages, token count) get the same filter.
     return requested_model, redact_payload(payload), url, key, headers, cookies
 
 
@@ -1575,7 +1575,7 @@ async def generate_chat_completion(
     if not is_streaming_request:
         payload.pop('stream_options', None)
 
-    # Group 6 PIA (B1, B3): pseudonymise identifiers before the chat leaves for the provider.
+    # Group 6 PIA (I1, I3): pseudonymise identifiers before the chat leaves for the provider.
     payload = redact_payload(payload)
     payload = JSONCodec.dumps(payload)
 
@@ -1699,7 +1699,7 @@ async def embeddings(request: Request, form_data: dict, user):
         dict: OpenAI-compatible embeddings response.
     """
     idx = 0
-    # Prepare payload/body (Group 6 PIA, B2/B4: pseudonymise identifiers first)
+    # Prepare payload/body (Group 6 PIA, I2: pseudonymise identifiers first)
     body = JSONCodec.dumps(redact_payload(form_data))
     # Find correct backend url/key based on model
     model_id = form_data.get('model')
@@ -1844,7 +1844,7 @@ async def responses(
     url, key, api_config = await get_openai_connection(idx)
 
     payload['model'] = strip_provider_model_prefix(payload['model'], api_config.get('prefix_id'))
-    body = JSONCodec.dumps(redact_payload(payload))  # Group 6 PIA (B1)
+    body = JSONCodec.dumps(redact_payload(payload))  # Group 6 PIA (I1)
 
     r = None
     streaming = False

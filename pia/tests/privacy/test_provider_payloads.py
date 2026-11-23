@@ -1,15 +1,15 @@
-"""Privacy findings B1, B2/B4 and B3: what an external model provider is sent.
+"""Privacy findings I1, I2 and I3: what an external model provider is sent.
 
 Use case (Option B): the lab runs a local model by default but the admin has also connected an
 external, OpenAI-compatible provider. The harness plays that provider with a scripted server that
 records every request it receives (`upstream`). The tests only read those recorded requests.
 No test depends on what a model answers.
 
-B1     A question about an attached document sends the retrieved passages (with the names, e-mail
+I1     A question about an attached document sends the retrieved passages (with the names, e-mail
        addresses and phone numbers in them) to the provider.
-B2/B4  When embeddings are computed by the external provider, every chunk of every uploaded document
+I2  When embeddings are computed by the external provider, every chunk of every uploaded document
        is sent at upload time, and no per-document rule exists to keep a sensitive file local.
-B3     Title, tag and follow-up generation are extra requests that carry the whole chat to the
+I3     Title, tag and follow-up generation are extra requests that carry the whole chat to the
        provider, unless the admin has set a local task model.
 
 GDPR: Art. 5(1)(b)(c) (purpose and minimisation), 25 (data protection by design), 28 (processor),
@@ -51,14 +51,14 @@ def _no_leak(counts: dict[str, int], where: str) -> None:
     assert not any(counts.values()), f"identifiers reached the provider ({where}): {counts}"
 
 
-# ------------------------------------------------------------------------------------- B1
+# ------------------------------------------------------------------------------------- I1
 
 
-def test_b1_retrieved_passages_do_not_carry_identifiers_to_the_provider(instance, make_user, upstream):
+def test_i1_retrieved_passages_do_not_carry_identifiers_to_the_provider(instance, make_user, upstream):
     member = make_user()
     with member.client() as client:
         file_id = upload(client, "interview_07.txt", TRANSCRIPT)
-        upstream.reset()  # forget the embedding requests of the upload; B1 is about the chat
+        upstream.reset()  # forget the embedding requests of the upload; I1 is about the chat
         _, message = ask(
             client,
             "What does the participant say about the co-author?",
@@ -70,10 +70,10 @@ def test_b1_retrieved_passages_do_not_carry_identifiers_to_the_provider(instance
     _no_leak(leaked(upstream.chat_requests()), "chat completions")
 
 
-# ------------------------------------------------------------------------------------- B2 / B4
+# ------------------------------------------------------------------------------------- I2
 
 
-def test_b2_b4_uploaded_chunks_do_not_carry_identifiers_to_the_embedding_provider(
+def test_i2_uploaded_chunks_do_not_carry_identifiers_to_the_embedding_provider(
     instance, make_user, upstream
 ):
     with make_user().client() as client:
@@ -84,7 +84,7 @@ def test_b2_b4_uploaded_chunks_do_not_carry_identifiers_to_the_embedding_provide
     _no_leak(leaked(_bodies(upstream, "/embeddings")), "embeddings at upload")
 
 
-# ------------------------------------------------------------------------------------- B3
+# ------------------------------------------------------------------------------------- I3
 
 
 @pytest.fixture
@@ -95,7 +95,7 @@ def tasks_on(admin, preserve):
         client.post("/api/v1/tasks/config/update", json={**current, **TASKS_ON}).raise_for_status()
 
 
-def test_b3_background_tasks_do_not_carry_the_chat_to_the_provider(instance, make_user, upstream, tasks_on):
+def test_i3_background_tasks_do_not_carry_the_chat_to_the_provider(instance, make_user, upstream, tasks_on):
     question = f"Please summarise what {IDENTIFIERS[0]} told us, her address is {IDENTIFIERS[1]}."
     with make_user().client() as client:
         ask(
