@@ -20,7 +20,7 @@ From the root of a full clone of the fork (it must contain `backend/`), with `gi
 ```
 git checkout pia/tests-only      # or pia/fixes
 bash pia/tests/run.sh            # about 1-2 minutes the first time, 15 seconds afterwards
-bash pia/tests/run.sh -v         # test names; add -k b3 to run one finding
+bash pia/tests/run.sh -v         # test names; add -k i3 to run one finding
 ```
 The script clones the official suite next to the repo (`../owui-tests`) at the commit of 14 Oct 2026
 (the day of our Open WebUI version), builds a Python environment, copies `pia/tests/privacy/` into the
@@ -35,16 +35,16 @@ branch you are on; nothing is installed on your computer. Result on a team lapto
 ## Tests and findings
 | Test | Finding | What the test does | Fails on `tests-only` because | GDPR |
 |---|---|---|---|---|
-| `test_d1_...` | Deleting a file | Upload, delete through the API, read the vector store | 1 chunk with the interview text is still stored | 17, 5(1)(e) |
-| `test_d2_..._file_chunks` | Deleting a user | Admin deletes the user, read the vector store | the user's file chunks are still stored | 17, 5(1)(e) |
-| `test_d2_..._memory_vectors` | Deleting a user | same | the user's memory vectors are still stored | 17, 5(1)(e) |
-| `test_d2_..._uploaded_files` | Deleting a user | same, plus the file API and the uploads folder | the file still answers HTTP 200 and its copy is on disk | 17, 5(1)(e) |
-| `test_d3_...` | Deleting a chat | Delete a chat, search the database files for its text | the text is still in the database files | 17 |
-| `test_d4_...` | Deleting a rated chat | Rate a chat, delete it, read the rating | the rating still holds a copy of the chat | 17, 5(1)(c) |
-| `test_b1_...` | B1 external model gets the passages | Ask about an attached document, read what the provider received | name, e-mail and phone are in the request | 5(1)(b)(c), 25, 28 |
-| `test_b2_b4_...` | B2+B4 external embeddings, no per-document rule | Upload, read what the embedding provider received | the same identifiers are in the upload request | 5(1)(c), 25, Ch. V |
-| `test_b3_...` | B3 background tasks | Chat with title/tags/follow-ups on, read the extra requests | 3 task requests carry the name and e-mail | 5(1)(c), 25 |
-| `test_b7_...` | B7 shared chat | Share a chat that used a private knowledge base with a colleague | the colleague, who cannot open the knowledge base, reads the e-mail | 5(1)(f), 25 |
+| `test_i5_...` | Deleting a file | Upload, delete through the API, read the vector store | 1 chunk with the interview text is still stored | 17, 5(1)(e) |
+| `test_i6_..._file_chunks` | Deleting a user | Admin deletes the user, read the vector store | the user's file chunks are still stored | 17, 5(1)(e) |
+| `test_i6_..._memory_vectors` | Deleting a user | same | the user's memory vectors are still stored | 17, 5(1)(e) |
+| `test_i6_..._uploaded_files` | Deleting a user | same, plus the file API and the uploads folder | the file still answers HTTP 200 and its copy is on disk | 17, 5(1)(e) |
+| `test_i7_...` | Deleting a chat | Delete a chat, search the database files for its text | the text is still in the database files | 17 |
+| `test_i8_...` | Deleting a rated chat | Rate a chat, delete it, read the rating | the rating still holds a copy of the chat | 17, 5(1)(c) |
+| `test_i1_...` | I1 external model gets the passages | Ask about an attached document, read what the provider received | name, e-mail and phone are in the request | 5(1)(b)(c), 25, 28 |
+| `test_i2_...` | I2 external embeddings, no per-document rule | Upload, read what the embedding provider received | the same identifiers are in the upload request | 5(1)(c), 25, Ch. V |
+| `test_i3_...` | I3 background tasks | Chat with title/tags/follow-ups on, read the extra requests | 3 task requests carry the name and e-mail | 5(1)(c), 25 |
+| `test_i4_...` | I4 shared chat | Share a chat that used a private knowledge base with a colleague | the colleague, who cannot open the knowledge base, reads the e-mail | 5(1)(f), 25 |
 
 The provider-side tests pass when no identifier reaches the provider. A pseudonymisation gateway or a
 rule that keeps the call local both satisfy them.
@@ -54,10 +54,10 @@ The tests follow the official suite's own contract (`docs/regression-test-contra
 
 ## Notes for reviewers (what each test does *not* prove)
 - The harness provider is a scripted stand-in. The tests show **what Open WebUI sends**, not what a real provider does with it (that stays an assumption, handled by contract).
-- The harness uses OpenAI-type embeddings by default. B2/B4 therefore tests the configuration the lab would have if it chose external embeddings, not the default of Open WebUI (local embeddings).
-- **B1/B2/B3 pass on the fixed branch partly because the test setup writes the synthetic name into the filter's name list** (`conftest.py`). A name that is not on the list is not protected. E-mail addresses and phone numbers are found by pattern and need no list.
+- The harness uses OpenAI-type embeddings by default. I2 therefore tests the configuration the lab would have if it chose external embeddings, not the default of Open WebUI (local embeddings).
+- **I1/I2/I3 pass on the fixed branch partly because the test setup writes the synthetic name into the filter's name list** (`conftest.py`). A name that is not on the list is not protected. E-mail addresses and phone numbers are found by pattern and need no list.
 - Some fix code is not exercised by any test: the sync OpenAI and Azure embedding paths, the Responses and Anthropic routes, and rating-copy removal in "delete all my chats". Undoing any of these leaves all ten tests green (mutation check, 11 Nov).
-- B7 covers retrieval from a knowledge base. A file stored on the chat message is readable through a share by design (`utils/access_control/files.py`), so it is not a leak.
-- D3 depends on the SQLite build. It fails on the unfixed code on the sandbox build and in the official Docker image, where `secure_delete` is on by default: the text stays in the write-ahead file until a checkpoint (VERIFIED 11 Nov). On a conda Python with `secure_delete` off, the text also stays in the main file.
+- I4 covers retrieval from a knowledge base. A file stored on the chat message is readable through a share by design (`utils/access_control/files.py`), so it is not a leak.
+- I7 depends on the SQLite build. It fails on the unfixed code on the sandbox build and in the official Docker image, where `secure_delete` is on by default: the text stays in the write-ahead file until a checkpoint (VERIFIED 11 Nov). On a conda Python with `secure_delete` off, the text also stays in the main file.
 - The suite's own boilerplate "SKEPTIC VERIFICATION" note appears after failures. We did that check: each failure was read, and every precondition (the data exists before the deletion, the document was retrieved, the colleague has no access) is asserted inside the test.
 - Version: the official suite follows Open WebUI's development branch. We pin it to the commit of 14 Oct so that it matches v0.12.2.

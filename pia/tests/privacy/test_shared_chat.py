@@ -1,4 +1,4 @@
-"""Privacy finding B7: a shared chat reveals passages the colleague has no right to read.
+"""Privacy finding I4: a shared chat reveals passages the colleague has no right to read.
 
 Alice keeps interview transcripts in a private knowledge base, attaches it to a chat, asks a
 question and shares the chat with Bob. Bob has no access to the knowledge base or its files (the
@@ -38,7 +38,7 @@ def members_may_create_knowledge(admin, preserve):
         client.post("/api/v1/users/default/permissions", json=current).raise_for_status()
 
 
-def test_b7_a_shared_chat_does_not_show_passages_of_a_knowledge_base_the_reader_cannot_open(
+def test_i4_a_shared_chat_does_not_show_passages_of_a_knowledge_base_the_reader_cannot_open(
     members_may_create_knowledge, make_user, upstream
 ):
     alice, bob = make_user(), make_user()

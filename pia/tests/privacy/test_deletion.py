@@ -1,12 +1,12 @@
-"""Privacy finding D1 and D2: deleting a file or a user must really delete their text.
+"""Privacy finding I5 and I6: deleting a file or a user must really delete their text.
 
 GDPR Art. 17 (erasure) and Art. 5(1)(e) (storage limitation). Data subjects are the people in the
 documents (interviewees, students, co-authors), not only the uploader.
 
-D1  A user deletes a file. The file row and the stored copy go, but the text chunks stay in the
+I5  A user deletes a file. The file row and the stored copy go, but the text chunks stay in the
     vector store (cause seen in code: routers/files.py asks the vector client to delete the
     collection without ids or a filter, and the Chroma client then does nothing).
-D2  The admin deletes a user. The account goes, but the user's files, their stored copies and the
+I6  The admin deletes a user. The account goes, but the user's files, their stored copies and the
     vector collections (file chunks and memories) stay.
 
 Both tests FAIL on Open WebUI v0.12.2 and must PASS once the deletion is complete.
@@ -29,10 +29,10 @@ from .pia_support import (
 pytestmark = [pytest.mark.regression, pytest.mark.api, pytest.mark.requires_source, pytest.mark.slow]
 
 
-# ------------------------------------------------------------------------------------- D1
+# ------------------------------------------------------------------------------------- I5
 
 
-def test_d1_deleting_a_file_leaves_no_text_in_the_vector_store(instance, make_user):
+def test_i5_deleting_a_file_leaves_no_text_in_the_vector_store(instance, make_user):
     owner = make_user()
     with owner.client() as client:
         file_id = upload(client, "interview_07.txt", TRANSCRIPT)
@@ -52,7 +52,7 @@ def test_d1_deleting_a_file_leaves_no_text_in_the_vector_store(instance, make_us
     assert vectors == 0, f"{vectors} embedding vector(s) of the deleted file are still stored"
 
 
-# ------------------------------------------------------------------------------------- D2
+# ------------------------------------------------------------------------------------- I6
 
 
 @pytest.fixture
@@ -79,21 +79,21 @@ def erased_account(instance, admin, make_user):
     return {"file_id": file_id, "file_collection": file_collection, "memory_collection": memory_collection}
 
 
-def test_d2_deleting_a_user_removes_their_file_chunks(instance, erased_account):
+def test_i6_deleting_a_user_removes_their_file_chunks(instance, erased_account):
     left = stored_chunks(instance, erased_account["file_collection"])
     assert not left, f"{len(left)} chunk(s) of the deleted user's file are still stored"
     vectors = stored_vectors(instance, erased_account["file_collection"])
     assert vectors == 0, f"{vectors} embedding vector(s) of the deleted user's file are still stored"
 
 
-def test_d2_deleting_a_user_removes_their_memory_vectors(instance, erased_account):
+def test_i6_deleting_a_user_removes_their_memory_vectors(instance, erased_account):
     left = stored_chunks(instance, erased_account["memory_collection"])
     assert not left, f"{len(left)} memory text(s) of the deleted user are still stored"
     vectors = stored_vectors(instance, erased_account["memory_collection"])
     assert vectors == 0, f"{vectors} memory embedding vector(s) of the deleted user are still stored"
 
 
-def test_d2_deleting_a_user_removes_their_uploaded_files(instance, admin, erased_account):
+def test_i6_deleting_a_user_removes_their_uploaded_files(instance, admin, erased_account):
     with admin.client() as client:
         still_readable = client.get(f"/api/v1/files/{erased_account['file_id']}")
     on_disk = stored_copies(instance, erased_account["file_id"])
